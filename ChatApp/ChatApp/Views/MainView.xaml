@@ -1,0 +1,65 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
+             xmlns:_layout="clr-namespace:ChatApp.Custom_Forms._Layout"
+             xmlns:viewmodels="clr-namespace:ChatApp.ViewModels" 
+             xmlns:extensions="http://xamarin.com/schemas/2020/toolkit"
+             xmlns:model="clr-namespace:ChatApp.Models"
+             x:Class="ChatApp.Views.MainView"
+             Shell.NavBarIsVisible="false"
+             Padding="2,2,2,2">
+    <ContentPage.BindingContext>
+        <viewmodels:MainVM/>
+    </ContentPage.BindingContext>
+    <ContentPage.Content>
+        <AbsoluteLayout>
+            <Grid RowDefinitions="auto,*">
+                <_layout:NavigationBar AllowBackNavigation="False"/>
+                <CollectionView ItemsSource="{Binding Models}"
+                            RemainingItemsThreshold="10"
+                            RemainingItemsThresholdReachedCommand="{Binding LoadChatsCommand}"
+                            Grid.Row="1">
+                    <CollectionView.ItemsLayout>
+                        <LinearItemsLayout Orientation="Vertical" ItemSpacing="5"/>
+                    </CollectionView.ItemsLayout>
+                    <CollectionView.EmptyView>
+                        <Grid>
+                            <StackLayout Orientation="Horizontal" VerticalOptions="Center" HorizontalOptions="Center">
+                                <Image Source="chat" HeightRequest="20"/>
+                                <Label Text="Keine Chats"/>
+                            </StackLayout>
+                        </Grid>
+                    </CollectionView.EmptyView>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="model:ChatModel">
+                            <Grid ColumnDefinitions="40,*"
+                                  extensions:TouchEffect.Command="{Binding Source={x:RelativeSource AncestorType={x:Type viewmodels:MainVM}},Path=SelectCommand}"
+                                  extensions:TouchEffect.CommandParameter="{Binding .}">
+                                <Image Source="{Binding Target.Avatar}" HeightRequest="40"
+                                       extensions:CornerRadiusEffect.CornerRadius="30"/>
+                                <Label VerticalTextAlignment="Center" Grid.Column="1" MaxLines="2"
+                                       FontAttributes="Bold">
+                                    <Label.FormattedText>
+                                        <FormattedString>
+                                            <FormattedString.Spans>
+                                                <Span Text="{Binding Target.Name}" FontAttributes="Bold" FontSize="14"/>
+                                                <Span Text="&#x0a;"/>
+                                                <Span Text="{Binding LastMessage}" FontAttributes="Italic" FontSize="10"/>
+                                            </FormattedString.Spans>
+                                        </FormattedString>
+                                    </Label.FormattedText>
+                                </Label>
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </Grid>
+            <Button Text="New Chat" Padding="2" CornerRadius="5" FontSize="12"
+                    AbsoluteLayout.LayoutFlags="PositionProportional"
+                    HeightRequest="35"
+                    Opacity=".75"
+                    AbsoluteLayout.LayoutBounds=".97,.99"
+                    Command="{Binding LoadUsersCommand}"/>
+        </AbsoluteLayout>
+    </ContentPage.Content>
+</ContentPage>

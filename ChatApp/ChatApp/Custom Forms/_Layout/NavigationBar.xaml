@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentView xmlns="http://xamarin.com/schemas/2014/forms" 
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
+             xmlns:xct="http://xamarin.com/schemas/2020/toolkit" 
+             xmlns:_layout="clr-namespace:ChatApp.Custom_Forms._Layout"
+             x:Class="ChatApp.Custom_Forms._Layout.NavigationBar"
+             HeightRequest="50"
+             x:DataType="_layout:NavigationBar">
+  <ContentView.Content>
+        <Grid ColumnDefinitions="50,*,50" RowDefinitions="50">
+            <Image Aspect="AspectFill"
+                   xct:CornerRadiusEffect.CornerRadius="30"
+                   HeightRequest="30" WidthRequest="30" 
+                   xct:IconTintColorEffect.TintColor="{x:StaticResource Primary}" 
+                   Source="back"
+                   Grid.Column="0"
+                   Rotation="180"
+                   x:Name="back"
+                   xct:TouchEffect.Command="{Binding BackCommand}"/>
+            <Image x:Name="img" Aspect="AspectFill" 
+                   xct:CornerRadiusEffect.CornerRadius="30" 
+                   HeightRequest="40" WidthRequest="40" 
+                   VerticalOptions="Center"
+                   HorizontalOptions="Center"
+                   Grid.Column="2"/>
+            <Label x:Name="user" VerticalTextAlignment="Center" 
+                   HorizontalTextAlignment="End"
+                   Grid.Column="1" 
+                   FontAttributes="Bold" TextColor="{x:StaticResource Primary}"/>
+        </Grid> 
+  </ContentView.Content>
+</ContentView>

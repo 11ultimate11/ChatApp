@@ -1,0 +1,69 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:extensions="http://xamarin.com/schemas/2020/toolkit" 
+             xmlns:viewmodels="clr-namespace:ChatApp.ViewModels"
+             x:Class="ChatApp.Views.Login"
+             NavigationPage.HasNavigationBar="False"
+             Shell.NavBarIsVisible="False"
+             Shell.FlyoutBehavior="Disabled"
+             Shell.TabBarIsVisible="False">
+    <ContentPage.BindingContext>
+        <viewmodels:LoginVM/>
+    </ContentPage.BindingContext>
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Style TargetType="Entry">
+                <Setter Property="WidthRequest" Value="250"/>
+                <Setter Property="VerticalTextAlignment" Value="Center"/>
+                <Setter Property="TextColor" Value="Green"/>
+                <Style.Triggers>
+                    <Trigger TargetType="Entry" Property="IsFocused" Value="True">
+                        <Setter Property="TextColor" Value="White"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    <ContentPage.Content>
+        <Grid CompressedLayout.IsHeadless="True" RowDefinitions="*,50">
+            <BoxView Grid.RowSpan="2">
+                <BoxView.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                        <GradientStop Offset=".2" Color="DodgerBlue"/>
+                        <GradientStop Offset=".5" Color="SkyBlue"/>
+                    </LinearGradientBrush>
+                </BoxView.Background>
+            </BoxView>
+            <Label FontSize="Title" Text="ChattApp" HorizontalTextAlignment="Center" Margin="0,30,0,0" FontAttributes="Bold" TextColor="White"/>
+            <StackLayout VerticalOptions="Center" HorizontalOptions="Center">
+                <Entry x:Name="username" Text="{Binding Username}" Placeholder="Benutzername eingeben"/>
+                <Entry x:Name="password" Text="{Binding Password}" Placeholder="Kennwort eingeben"/>
+                <Button Text="Einloggen" BackgroundColor="Transparent" HorizontalOptions="End">
+                    <Button.Triggers>
+                        <MultiTrigger TargetType="Button">
+                            <MultiTrigger.Conditions>
+                                <BindingCondition Binding="{Binding Source={x:Reference password},Path=Text.Length , Converter={extensions:IntToBoolConverter}}" Value="true"/>
+                                <BindingCondition Binding="{Binding Source={x:Reference username},Path=Text.Length , Converter={extensions:IntToBoolConverter}}" Value="true"/>
+                            </MultiTrigger.Conditions>
+                            <Setter Property="TextColor" Value="green"/>
+                            <Setter Property="Command" Value="{Binding LogInCommand}"/>
+                        </MultiTrigger>
+                    </Button.Triggers>
+                </Button>
+            </StackLayout>
+
+            <StackLayout Orientation="Horizontal" Grid.Row="1" HorizontalOptions="Start">
+                <CheckBox x:Name="box" IsChecked="{Binding CheckBoxState}"/>
+                <Label Text="autologin" TextColor="Red" VerticalTextAlignment="Center">
+                    <Label.Triggers>
+                        <DataTrigger TargetType="Label" Binding="{Binding Source={x:Reference box},Path=IsChecked}" Value="true">
+                            <Setter Property="TextColor" Value="green"/>
+                        </DataTrigger>
+                    </Label.Triggers>
+                </Label>
+            </StackLayout>
+            <Button Text="Registrieren" VerticalOptions="End" Grid.Row="1" HorizontalOptions="End" BackgroundColor="Transparent"
+                    Command="{Binding RegisterCommand}"/>
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>

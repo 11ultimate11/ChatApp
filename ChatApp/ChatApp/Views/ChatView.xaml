@@ -1,0 +1,90 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
+             xmlns:viewmodels="clr-namespace:ChatApp.ViewModels" 
+             xmlns:_layout="clr-namespace:ChatApp.Custom_Forms._Layout" 
+             xmlns:extensions="http://xamarin.com/schemas/2020/toolkit" 
+             xmlns:renderers="clr-namespace:ChatApp.Custom_Forms.Renderers" 
+             xmlns:models="clr-namespace:ChatApp.Models" xmlns:utility="clr-namespace:ChatApp.Utility"
+             x:Class="ChatApp.Views.ChatView"
+             Shell.NavBarIsVisible="False"
+             Shell.TabBarIsVisible="False">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <DataTemplate x:Key="eigeneTemplate" x:DataType="models:ChatMessageModel">
+                <Grid ColumnDefinitions="*,2*" Rotation="180">
+                    <Frame BackgroundColor="{x:StaticResource Primary}" Grid.Column="1" Margin="0,0,5,0" CornerRadius="40" Padding="10"
+                           HorizontalOptions="End">
+                        <Label 
+                               TextColor="White" FontSize="13"
+                               HorizontalTextAlignment="End">
+                            <Label.FormattedText>
+                                <FormattedString>
+                                    <FormattedString.Spans>
+                                        <Span Text="{Binding Content}"/>
+                                        <Span Text="&#x0a;"/>
+                                        <Span Text="{Binding Date}" TextColor="LightGray" FontSize="10" FontAttributes="Italic"/>
+                                    </FormattedString.Spans>
+                                </FormattedString>
+                            </Label.FormattedText>
+                        </Label>
+                    </Frame>
+                </Grid>
+            </DataTemplate>
+            <DataTemplate x:Key="fremdTemplate" x:DataType="models:ChatMessageModel">
+                <Grid ColumnDefinitions="*,2*" Rotation="180">
+                    <Frame BackgroundColor="Gray" Margin="5,0,0,0"  CornerRadius="40" Padding="10"
+                           HorizontalOptions="Start">
+                        <Label 
+                               TextColor="White" FontSize="13"
+                               HorizontalTextAlignment="Start">
+                            <Label.FormattedText>
+                                <FormattedString>
+                                    <FormattedString.Spans>
+                                        <Span Text="{Binding Content}"/>
+                                        <Span Text="&#x0a;"/>
+                                        <Span Text="{Binding Date}" TextColor="LightGray" FontSize="10" FontAttributes="Italic"/>
+                                    </FormattedString.Spans>
+                                </FormattedString>
+                            </Label.FormattedText>
+                        </Label>
+                    </Frame>
+                </Grid>
+            </DataTemplate>
+            <utility:ChatSelectorDT x:Key="selector"
+                                    EigeneDT="{x:StaticResource eigeneTemplate}"
+                                    FremdDT="{x:StaticResource fremdTemplate}"/>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    <ContentPage.Content>
+        <Grid RowDefinitions="50,*,53" x:DataType="viewmodels:ChatVM">
+            <_layout:SecondaryNavigationBar/>
+            <CollectionView Grid.Row="1"
+                            x:Name="coll"
+                            Rotation="180"
+                            ItemsSource="{Binding Models}"
+                            ItemTemplate="{x:StaticResource selector}"
+                            RemainingItemsThreshold="10"
+                            RemainingItemsThresholdReachedCommand="{Binding LoadMoreCommand}">
+                <CollectionView.EmptyView>
+                    <Label Text="Keine Nachrichten" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" Rotation="180"/>
+                </CollectionView.EmptyView>
+                <CollectionView.ItemsLayout>
+                    <LinearItemsLayout Orientation="Vertical" ItemSpacing="5"/>
+                </CollectionView.ItemsLayout>
+            </CollectionView>
+            <Grid VerticalOptions="End" Grid.RowSpan="3" Margin="10,0,10,0" ColumnDefinitions="*,50">
+                <renderers:ChatEditor x:Name="chatEditor" Placeholder="eintippen" Text="{Binding Input}" HasRoundedCorner="True" AutoSize="TextChanges"/>
+                <ImageButton Source="send" BackgroundColor="White" Grid.Column="1" HeightRequest="30" VerticalOptions="End" Margin="0,0,0,10"
+                             extensions:IconTintColorEffect.TintColor="red">
+                    <ImageButton.Triggers>
+                        <DataTrigger TargetType="ImageButton" Binding="{Binding Source={x:Reference chatEditor},Path=Text.Length , Converter={extensions:IntToBoolConverter}}" Value="true">
+                            <Setter Property="extensions:IconTintColorEffect.TintColor" Value="{x:StaticResource Primary}"/>
+                            <Setter Property="Command" Value="{Binding SendCommand}"/>
+                        </DataTrigger>
+                    </ImageButton.Triggers>
+                </ImageButton>
+            </Grid>
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>

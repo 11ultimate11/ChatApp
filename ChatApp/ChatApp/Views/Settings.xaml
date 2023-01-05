@@ -1,0 +1,119 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
+             xmlns:viewmodels="clr-namespace:ChatApp.ViewModels" 
+             xmlns:extensions="http://xamarin.com/schemas/2020/toolkit"
+             Shell.NavBarIsVisible="False"
+             x:Class="ChatApp.Views.Settings"
+             Padding="5,2,5,1">
+    <ContentPage.BindingContext>
+        <viewmodels:SettingsVM/>
+    </ContentPage.BindingContext>
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Style TargetType="Image">
+                <Setter Property="Aspect" Value="AspectFill"/>
+                <Setter Property="VerticalOptions" Value="Center"/>
+                <Setter Property="HorizontalOptions" Value="Center"/>
+                <Setter Property="HeightRequest" Value="150"/>
+                <Setter Property="WidthRequest" Value="150"/>
+                <Setter Property="extensions:CornerRadiusEffect.CornerRadius" Value="100"/>
+                <Setter Property="Margin" Value="0,30,0,0"/>
+            </Style>
+            <Style TargetType="Label" x:Key="header">
+                <Setter Property="FontSize" Value="35"/>
+                <Setter Property="FontAttributes" Value="Bold"/>
+                <Setter Property="HorizontalTextAlignment" Value="Center"/>
+                <Setter Property="Margin" Value="0,0,0,50"/>
+                <Setter Property="TextColor" Value="{x:StaticResource Primary}"/>
+            </Style>
+            <Style TargetType="Label">
+                <Setter Property="TextColor" Value="{x:StaticResource Primary}"/>
+                <Setter Property="FontSize" Value="20"/>
+                <Setter Property="FontAttributes" Value="Bold"/>
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    <ContentPage.Content>
+        <ScrollView>
+            <StackLayout Spacing="10">
+                <Image Source="{Binding Person.Avatar}"
+                       extensions:TouchEffect.Command="{Binding EditCommand}"/>
+                <Label Text="Avatar auswählen" HorizontalOptions="End" 
+                       Margin="0,0,100,30" FontSize="10"
+                       TextColor="{x:StaticResource Primary}"/>
+                <Label Text="{Binding Person.Name}" Style="{x:StaticResource header}"/>
+                <Label >
+                    <Label.FormattedText>
+                        <FormattedString>
+                            <FormattedString.Spans>
+                                <Span Text="Geburtsdatum : "/>
+                                <Span Text="{Binding Person.Bday}" TextColor="Green" FontAttributes="Italic"/>
+                            </FormattedString.Spans>
+                        </FormattedString>
+                    </Label.FormattedText>
+                </Label>
+                <Label >
+                    <Label.FormattedText>
+                        <FormattedString>
+                            <FormattedString.Spans>
+                                <Span Text="Geschlecht : "/>
+                                <Span Text="{Binding Person.Gender}" TextColor="Green" FontAttributes="Italic"/>
+                            </FormattedString.Spans>
+                        </FormattedString>
+                    </Label.FormattedText>
+                </Label>
+                <Label >
+                    <Label.FormattedText>
+                        <FormattedString>
+                            <FormattedString.Spans>
+                                <Span Text="Benutzername : "/>
+                                <Span Text="{Binding Person.Credentials.Username}" TextColor="Green" FontAttributes="Italic"/>
+                            </FormattedString.Spans>
+                        </FormattedString>
+                    </Label.FormattedText>
+                </Label>
+                <Label >
+                    <Label.FormattedText>
+                        <FormattedString>
+                            <FormattedString.Spans>
+                                <Span Text="Kennwort : "/>
+                                <Span Text="{Binding Person.Credentials.Password}" TextColor="Green" FontAttributes="Italic"/>
+                            </FormattedString.Spans>
+                        </FormattedString>
+                    </Label.FormattedText>
+                </Label>
+                <Label >
+                    <Label.FormattedText>
+                        <FormattedString>
+                            <FormattedString.Spans>
+                                <Span Text="Chats : "/>
+                                <Span Text="{Binding ChatsCount}" TextColor="Green" FontAttributes="Italic"/>
+                            </FormattedString.Spans>
+                        </FormattedString>
+                    </Label.FormattedText>
+                </Label>
+                <Label >
+                    <Label.FormattedText>
+                        <FormattedString>
+                            <FormattedString.Spans>
+                                <Span Text="Gesendete Nachrichten : "/>
+                                <Span Text="{Binding MsjsCount}" TextColor="Green" FontAttributes="Italic"/>
+                            </FormattedString.Spans>
+                        </FormattedString>
+                    </Label.FormattedText>
+                </Label>
+                <StackLayout Orientation="Horizontal">
+                    <CheckBox x:Name="box" IsChecked="{Binding CheckBoxState}"/>
+                    <Label Text="autologin" TextColor="Red">
+                        <Label.Triggers>
+                            <DataTrigger TargetType="Label" Binding="{Binding Source={x:Reference box},Path=IsChecked}" Value="true">
+                                <Setter Property="TextColor" Value="green"/>
+                            </DataTrigger>
+                        </Label.Triggers>
+                    </Label>
+                </StackLayout>
+            </StackLayout>
+        </ScrollView>
+    </ContentPage.Content>
+</ContentPage>

@@ -1,0 +1,79 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
+             xmlns:extensions="http://xamarin.com/schemas/2020/toolkit" 
+             xmlns:viewmodels="clr-namespace:ChatApp.ViewModels"
+             x:Class="ChatApp.Views.Register"
+             NavigationPage.HasNavigationBar="False"
+             Shell.NavBarIsVisible="False"
+             Shell.TabBarIsVisible="False">
+    <ContentPage.BindingContext>
+        <viewmodels:RegisterVM/>
+    </ContentPage.BindingContext>
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Style TargetType="Entry">
+                <Setter Property="WidthRequest" Value="250"/>
+                <Setter Property="VerticalTextAlignment" Value="Center"/>
+                <Setter Property="TextColor" Value="Green"/>
+                <Style.Triggers>
+                    <Trigger TargetType="Entry" Property="IsFocused" Value="True">
+                        <Setter Property="TextColor" Value="White"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    <ContentPage.Content>
+        <ScrollView Orientation="Vertical" VerticalScrollBarVisibility="Never">
+            <Grid RowDefinitions="50,50,*" ColumnDefinitions="50,*">
+                <BoxView Grid.RowSpan="3" Grid.ColumnSpan="2">
+                    <BoxView.Background>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                            <GradientStop Offset=".2" Color="DodgerBlue"/>
+                            <GradientStop Offset=".5" Color="SkyBlue"/>
+                        </LinearGradientBrush>
+                    </BoxView.Background>
+                </BoxView>
+                <Image Source="back" Rotation="180"
+                   extensions:TouchEffect.Command="{Binding GoBackCommand}"
+                   extensions:IconTintColorEffect.TintColor="White"/>
+                <Label Text="Registrieren" HorizontalTextAlignment="Center" Grid.ColumnSpan="2" Grid.Row="1"
+                   FontSize="Title" TextColor="White"
+                   FontAttributes="Bold"/>
+                <StackLayout VerticalOptions="Center" HorizontalOptions="Center" Grid.Row="2" Grid.ColumnSpan="2">
+                    <Frame IsClippedToBounds="True" Padding="0" CornerRadius="200"  HeightRequest="150" WidthRequest="150" HorizontalOptions="Center"
+                           extensions:TouchEffect.Command="{Binding SelectAvatarCommand}">
+                        <Image Source="{Binding Icon}" Aspect="AspectFill"/>
+                    </Frame>
+                    <Label Text="Avatar auswählen" TextColor="{Binding TextIconColor}" Opacity=".75" Margin="0,0,0,20" HorizontalTextAlignment="End" FontSize="10"/>
+                    <Entry x:Name="nachname" Text="{Binding Nachname}" Placeholder="Nachname eingeben"/>
+                    <Entry x:Name="vorname" Text="{Binding Vorname}" Placeholder="Vorname eingeben"/>
+                    <Entry x:Name="username" Text="{Binding Username}" Placeholder="Benutzername eingeben"/>
+                    <Entry x:Name="password" Text="{Binding Password}" Placeholder="Kennwort eingeben"/>
+                    <Label Text="Geburtsdatum" Opacity=".75" FontSize="10" Margin="0,5,0,0"/>
+                    <DatePicker x:Name="datePicker" Date="{Binding Geburtsdatum}" MinimumDate="01.01.1900"/>
+                    <Label Text="Geschlecht" Opacity=".75" FontSize="10" Margin="0,5,0,0"/>
+                    <Picker ItemsSource="{Binding Genders}" SelectedIndex="{Binding GenderID}"/>
+                    <Button Text="Registrieren" BackgroundColor="Transparent" HorizontalOptions="End">
+                        <Button.Triggers>
+                            <MultiTrigger TargetType="Button">
+                                <MultiTrigger.Conditions>
+                                    <BindingCondition Binding="{Binding Source={x:Reference password},Path=Text.Length , Converter={extensions:IntToBoolConverter}}" Value="true"/>
+                                    <BindingCondition Binding="{Binding Source={x:Reference username},Path=Text.Length , Converter={extensions:IntToBoolConverter}}" Value="true"/>
+                                    <BindingCondition Binding="{Binding Source={x:Reference nachname},Path=Text.Length , Converter={extensions:IntToBoolConverter}}" Value="true"/>
+                                    <BindingCondition Binding="{Binding Source={x:Reference vorname},Path=Text.Length , Converter={extensions:IntToBoolConverter}}" Value="true"/>
+                                    <BindingCondition Binding="{Binding IconSelect}" Value="true"/>
+                                </MultiTrigger.Conditions>
+                                <Setter Property="TextColor" Value="green"/>
+                                <Setter Property="Command" Value="{Binding RegisterCommand}"/>
+                            </MultiTrigger>
+                        </Button.Triggers>
+                    </Button>
+                    <Label Text="Alle Felder müssen ausgefüllt werden !&#x0a;Der Benutzer muss ein Bild auswählen" FontAttributes="Italic" TextColor="Gray"/>
+                </StackLayout>
+            </Grid>
+        </ScrollView>
+        
+    </ContentPage.Content>
+</ContentPage>

@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<popup:PopupPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:popup="clr-namespace:Rg.Plugins.Popup.Pages;assembly=Rg.Plugins.Popup" 
+                 xmlns:models="clr-namespace:ChatApp.Models" 
+                 xmlns:extensions="http://xamarin.com/schemas/2020/toolkit"
+                 x:Class="ChatApp.Custom_Forms.PopUps.UsersPopUp"
+                 xmlns:local="clr-namespace:ChatApp.Custom_Forms.PopUps">
+    <Frame
+               BackgroundColor="White"
+               CornerRadius="10"
+               Margin="40,60,40,60"
+               HasShadow="True"
+        VerticalOptions="CenterAndExpand"
+        HorizontalOptions="CenterAndExpand">
+        <Grid RowDefinitions="35 , * , 40">
+            <Label Text="Users" VerticalTextAlignment="Center" HorizontalTextAlignment="Center"
+                   FontSize="30" TextColor="DodgerBlue" FontAttributes="Bold"/>
+            <CollectionView x:Name="coll" Margin="0,20,0,0"
+                        RemainingItemsThreshold="10"
+                        Grid.Row="1">
+                <CollectionView.ItemsLayout>
+                    <LinearItemsLayout Orientation="Vertical" ItemSpacing="5"/>
+                </CollectionView.ItemsLayout>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:PersonModel" >
+                        <Grid ColumnDefinitions="40,*"  
+                              extensions:TouchEffect.Command="{Binding Source={x:RelativeSource AncestorType={x:Type local:UsersPopUp}},Path=SelectCommand ,Mode=OneTime}"
+                              extensions:TouchEffect.CommandParameter="{Binding .}">
+                            <Image Source="{Binding Avatar ,Mode=OneTime}" Aspect="AspectFill"
+                                   extensions:CornerRadiusEffect.CornerRadius="30"
+                                   HeightRequest="40"/>
+                            <Label Grid.Column="1" VerticalTextAlignment="Center" FontAttributes="Bold">
+                                <Label.FormattedText>
+                                    <FormattedString>
+                                        <FormattedString.Spans>
+                                            <Span Text="{Binding Vorname ,Mode=OneTime}"/>
+                                            <Span Text="{Binding Nachname ,Mode=OneTime}"/>
+                                        </FormattedString.Spans>
+                                    </FormattedString>
+                                </Label.FormattedText>
+                            </Label>
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+            <Button Text="Cancel" VerticalOptions="End"
+                    BackgroundColor="Red" TextColor="White" CornerRadius="5"
+                    Padding="2"
+                    Clicked="Button_Clicked"
+                    Grid.Row="2"/>
+        </Grid>
+    </Frame>
+</popup:PopupPage>

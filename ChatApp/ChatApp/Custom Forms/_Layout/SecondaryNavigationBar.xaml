@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentView xmlns="http://xamarin.com/schemas/2014/forms" 
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
+             xmlns:extensions="http://xamarin.com/schemas/2020/toolkit"
+             x:Class="ChatApp.Custom_Forms._Layout.SecondaryNavigationBar">
+    <ContentView.Content>
+        <Grid ColumnDefinitions="40,*,*,50">
+            <Image Source="back" HeightRequest="40" Rotation="180" extensions:IconTintColorEffect.TintColor="{x:StaticResource Primary}">
+                <Image.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="TapGestureRecognizer_Tapped"/>
+                </Image.GestureRecognizers>
+            </Image>
+            <Label Text="Zurrück" VerticalTextAlignment="Center" FontAttributes="Bold" TextColor="{x:StaticResource Primary}" Grid.Column="1"
+                   HorizontalTextAlignment="Start">
+                <Label.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="TapGestureRecognizer_Tapped"/>
+                </Label.GestureRecognizers>
+            </Label>
+            <Image x:Name="img" Aspect="AspectFill" extensions:CornerRadiusEffect.CornerRadius="40"
+                   Margin="3,3,3,3"
+                   Grid.Column="3"/>
+            <Label x:Name="user" VerticalTextAlignment="Center"
+                   HorizontalTextAlignment="End" Grid.Column="2"
+                   FontAttributes="Bold"
+                   TextColor="{x:StaticResource Primary}"/>
+        </Grid>
+    </ContentView.Content>
+</ContentView>

@@ -1,0 +1,13 @@
+Dieses Projekt ist ein Beispiel für eine perfekt funktionierende Echtzeit-Chat-Anwendung.
+Aus Zeitmangel (da ich jeden Tag auch arbeiten gehe und nur paar Tage dazu Zeit hatte) habe ich beschlossen, einige Opfer zu bringen:
+Sql-Validierung / Sql-Injektion
+Für die Datenbank habe ich Entityframework verwendet (ich bin kein Fan von Enityframework), ich hätte es vorgezogen, meine eigenen Abfragen zu schreiben, 
+möglicherweise mit parametrisierten Abfragen und gespeicherten Prozeduren.
+Die SignalR-Architektur ist sehr einfach, ich hätte sie gerne flacher gestaltet, mit mehr Kanälen und Gruppen, möglicherweise mit Token-Validierung, 
+aber die Zeit hat es nicht erlaubt.
+
+WARNUNG: Diese APP ist nur für Android verifiziert, weil ich keine Möglichkeit habe, in IOS zu testen. Es ist möglich, dass Customrenderer in IOS nicht funktionieren.
+
+Die Dokumentation ist nur teilweise, meine Absicht war es, Ihre Interesse zu wecken und Ihnen eine Vorstellung davon zu geben, auf welchem Niveau ich in c# bin, 
+für weitere Informationen stehe ich Ihnen gern beim einen Vorstellungsgespräch zur Verfügung.
+

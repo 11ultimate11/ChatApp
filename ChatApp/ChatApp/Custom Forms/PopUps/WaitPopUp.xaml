@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<popup:PopupPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:popup="clr-namespace:Rg.Plugins.Popup.Pages;assembly=Rg.Plugins.Popup" 
+             x:Class="ChatApp.Custom_Forms.PopUps.WaitPopUp">
+    <ContentPage.Content>
+        <Frame
+               BackgroundColor="White"
+               CornerRadius="50"
+               Margin="40,60,40,60"
+               HasShadow="True"
+            HeightRequest="50"
+            WidthRequest="200"
+            Padding="3"
+        VerticalOptions="CenterAndExpand"
+        HorizontalOptions="CenterAndExpand">
+            <StackLayout Orientation="Horizontal">
+                <ActivityIndicator IsRunning="True" Color="{x:StaticResource Primary}"/>
+                <Label Text="Bitte warten..." VerticalTextAlignment="Center" TextColor="{x:StaticResource Primary}"/>
+            </StackLayout>
+        </Frame>
+    </ContentPage.Content>
+</popup:PopupPage>
