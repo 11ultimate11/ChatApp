@@ -1,0 +1,55 @@
+﻿@using static ChatAppServer.Services.Enums;
+@inject IJSRuntime JS;
+
+
+<div class="sidebar-container">
+    <button id="sbProfile" onclick="@OnProfilClick" class="sidebar-item-sm sidebar-item sidebar-button sidebar-button-sm sidebar-item-active" title="Go to your profile">
+        <img class="sidebar-item-img sidebar-item-img-sm" src="./Images/profile.png" />
+        <p>Profile</p>
+    </button>
+    <button id="sbSearch" onclick="@OnSearchClick" class="sidebar-item-sm sidebar-item sidebar-button sidebar-button-sm">
+        <img class="sidebar-item-img sidebar-item-img-sm" src="./Images/search.png" />
+        <p>Search</p>
+    </button>
+    <button id="sbChat" onclick="@OnChatClick" class="sidebar-item-sm sidebar-item sidebar-button sidebar-button-sm">
+        <img class="sidebar-item-img sidebar-item-img-sm" src="./Images/chat.png" />
+        <p>Chats</p>
+    </button>
+    <button id="sbEdit" onclick="@OnEditClick" class="sidebar-item-sm sidebar-item sidebar-button sidebar-button-sm">
+        <img class="sidebar-item-img sidebar-item-img-sm" src="./Images/edit2.png" />
+        <p>Preferences</p>
+    </button>
+</div>
+
+
+
+@code {
+    private MainpageState mainpageState = MainpageState.profile;
+    [Parameter]
+    public EventCallback<MainpageState> On_tab_change { get; set; }
+
+    private async Task OnChatClick()
+    {
+        mainpageState = MainpageState.Chats;
+        //await On_tab_change.InvokeAsync(mainpageState);
+        await JS.InvokeVoidAsync("SidebarChangeTab", "sbChat");
+    }
+    private async Task OnProfilClick()
+    {
+        mainpageState = MainpageState.profile;
+        await On_tab_change.InvokeAsync(mainpageState);
+        await JS.InvokeVoidAsync("SidebarChangeTab", "sbProfile");
+    }
+    private async Task OnSearchClick()
+    {
+        mainpageState = MainpageState.search;
+        await On_tab_change.InvokeAsync(mainpageState);
+        await JS.InvokeVoidAsync("SidebarChangeTab", "sbSearch");
+    }
+    private async Task OnEditClick()
+    {
+        mainpageState = MainpageState.Preferences;
+        await On_tab_change.InvokeAsync(mainpageState);
+        await JS.InvokeVoidAsync("SidebarChangeTab", "sbEdit");
+    }
+}

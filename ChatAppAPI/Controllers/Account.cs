@@ -50,6 +50,33 @@ namespace ChatAppAPI.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [Authorize]
+        [HttpGet("LogInWithToken/{token}")]
+        public IActionResult LogInWithToken()
+        {
+            if (HttpContext.User.Identity is not ClaimsIdentity claims ||
+                _jwt.Credentials(claims) is not CredentialsModel credentials) return BadRequest();
+            try
+            {
+                var cred = _db.CredentialsModel.FirstOrDefault(x => x.Username!.Equals(credentials.Username) && x.Password == credentials.Password);
+                if (cred is null) return BadRequest("invalid pass or username");
+                var person = _db.PersonModels.FirstOrDefault(x => x.CredentialsId == cred.ID);
+                if (person is null) { return BadRequest("credentials not found"); }
+                person.Media = _db.MediaModels.Find(person.MediaId);
+                person.Credentials!.PersonID = person.ID;
+                var token = _jwt.GenerateToken(person.Credentials!);
+                JsonObject obj = new()
+                {
+                    { "person" , JsonConvert.SerializeObject(person) },
+                    { "token" , token },
+                };
+                return Ok(obj);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
         [AllowAnonymous]
         [HttpPost("Register")]
         public async Task<IActionResult> Register([FromBody] PersonModel model)

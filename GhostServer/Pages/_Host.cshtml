@@ -1,7 +1,6 @@
 ﻿@page "/"
 @using Microsoft.AspNetCore.Components.Web
-@using ChatAppServer.Controller;
-@namespace ChatAppServer.Pages
+@namespace GhostServer.Pages
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 
 <!DOCTYPE html>
@@ -12,16 +11,13 @@
     <base href="~/" />
     <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" />
     <link href="css/site.css" rel="stylesheet" />
-    <link href="ChatAppServer.styles.css" rel="stylesheet" />
+    <link href="GhostServer.styles.css" rel="stylesheet" />
     <link rel="icon" type="image/png" href="favicon.png"/>
-    <link rel="stylesheet" type="text/css" href="./css/NavbarStyle.css"/>
-    <link rel="stylesheet" type="text/css" href="./css/SidebarStyle.css"/>
-    <link rel="stylesheet" type="text/css" href="./css/PersonCardStyle.css"/>
     <component type="typeof(HeadOutlet)" render-mode="ServerPrerendered" />
 </head>
-<body style=" margin:0 !important; padding-top:60px; overflow:hidden; background-color:rgb(30,30,30)">
-    
+<body>
     <component type="typeof(App)" render-mode="ServerPrerendered" />
+
     <div id="blazor-error-ui">
         <environment include="Staging,Production">
             An error has occurred. This application may no longer respond until reloaded.
@@ -34,6 +30,5 @@
     </div>
 
     <script src="_framework/blazor.server.js"></script>
-    <script src="~/JavaScript.js"></script>
 </body>
 </html>

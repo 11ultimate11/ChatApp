@@ -7,8 +7,19 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Blazor.LocalStorage" Version="7.0.0" />
+    <PackageReference Include="Blazored.LocalStorage" Version="4.3.0" />
     <PackageReference Include="Microsoft.AspNet.SignalR.Core" Version="2.4.3" />
-    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client.Core" Version="7.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="7.0.2" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client.Core" Version="7.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\JS\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\GhostLibrary\GhostLibrary.csproj" />
   </ItemGroup>
 
 </Project>

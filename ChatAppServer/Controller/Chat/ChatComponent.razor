@@ -1,0 +1,38 @@
+﻿@using GhostLibrary.Models;
+@using System.Diagnostics;
+@inject IJSRuntime JS;
+
+
+
+<div onclick="@HandleClick" class="sidebar-secondary-item">
+    <div>
+        <img src="./Images/1672680131949[57].jpg" />
+    </div>
+    <div>
+        <p class="siderbar-secondary-item-name">Person Name</p>
+        <p class="siderbar-secondary-item-msj">Last message tipped over this time of the galaxy and the star ...</p>
+    </div>
+    <div class="sidebar-secondary-status">
+    </div>
+</div>
+
+@code {
+
+    [Parameter]
+    public EventCallback<ChatModel> InovkeOnMainPage { get; set; }
+    [Parameter]
+    public int OwnerID { get; set; }
+    [Parameter]
+    public ChatModel? Chat { get; set; }
+    private PersonModel? target;
+    private async Task HandleClick()
+    {
+        Debug.WriteLine("clicked");
+        await JS.InvokeVoidAsync("AnimateSecondarySidebar", false);
+        await InovkeOnMainPage.InvokeAsync(Chat);
+    }
+    private async Task DownloadPerson()
+    {
+        
+    }
+}

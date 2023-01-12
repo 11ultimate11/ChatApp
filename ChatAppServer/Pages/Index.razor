@@ -1,9 +1,106 @@
 ﻿@page "/"
+@using ChatAppServer.Models;
+@using ChatAppServer.Services;
+@using GhostLibrary.Models;
+@using GhostLibrary.Services.Interfaces;
+@using ChatAppServer.Controller;
+@using System.Text.Json.Nodes;
+@using System.Diagnostics;
+@using Newtonsoft.Json;
+@inject IJSRuntime JS;
+@inject IApiProcessor api;
+@inject NavigationManager nav;
+@inject Blazored.LocalStorage.ILocalStorageService localStorage;
 
-<PageTitle>Index</PageTitle>
 
-<h1>Hello, world!</h1>
 
-Welcome to your new app.
+<div class="index-title">
+    <h1>Ghost Chat App</h1>
+</div>
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+
+<div class="index-form">
+    <form>
+        <label for="usernameinput" class="form-label">Username</label>
+        <input class="form-control" id="usernameinput" placeholder="enter your username" @bind="username" />
+        <label for="passwordinput" class="form-label">Password</label>
+        <input class="form-control" id="passwordinput" placeholder="enter your password" @bind="password" />
+    </form>
+
+    <div class="container mt-1">
+        <div class="row">
+            <div class="col-8 text-primary"><i><u>Click here to register</u></i></div>
+            <div class="col-4">
+                <button class="btn btn-primary float-end" @onclick="Login">Login</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+<style>
+    .index-form{
+        position:fixed;
+        top:40%;
+        left:30%;
+        right:30%;
+        width:auto;
+        max-width:500px;
+        
+    }
+    .index-title {
+        text-align:center;
+        margin-top:50px;
+        font-family:Arial;
+        font-weight:bold;
+        text-shadow: 5px 5px 5px;
+        color:dodgerblue;
+    }
+</style>
+
+
+@code {
+    private string? username;
+    private string? password;
+    private string? result;
+    private bool show;
+    private ChatView? chatView;
+    private string? _input;
+    private PersonModel? personModel = new PersonModel()
+        {
+            Vorname = "florin",
+            Nachname = "admin",
+
+        };
+    void Login()
+    {
+        show = true;
+        Task.Run(async () =>
+        {
+            var _result = await api.LogInAsync(new CredentialsModel() { Username = username, Password = password }, "Account/LogIn" , string.Empty);
+            await InvokeAsync(async () =>
+            {
+                show = true;
+                result = _result;
+                StateHasChanged();
+                //await JS.InvokeVoidAsync("myFunc", "api ok");
+                var node = JsonObject.Parse(_result);
+                await TokenIO.SaveToken("token", node["token"].ToString() , JS);
+                var person = JsonConvert.DeserializeObject<PersonModel>(node["person"].ToString());
+                await TokenIO.SaveToken("token", node["token"].ToString() , JS);
+                await TokenIO.SaveToken("personID", person.ID.ToString(), JS);
+                nav.NavigateTo("/mainpage");
+            });
+        });
+
+    }
+    void Add()
+    {
+        ChatMessageModel model = new ChatMessageModel
+            {
+                PersonID = 2,
+                Content = _input,
+                CreatedDate = DateTime.Now
+            };
+        chatView?.AddNewMsj(model);
+    }
+}

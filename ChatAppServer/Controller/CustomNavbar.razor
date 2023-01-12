@@ -1,0 +1,45 @@
+﻿@inject IJSRuntime JS;
+<nav>
+    <div class="navbar-left">
+        <img src="./Images/chatt-app-logo.png" alt="" class=" navbar-left-sm navbar-left-md navbar-left-lg">
+        <p class="navbar-logo-name-sm navbar-logo-name-md navbar-logo-name-lg navbar-left-logo-hidde " style="margin-top:15px">Ghost App</p>
+    </div>
+    <div id="navbar-items" class="navbar-middle navbar-middle-hidde">
+        <div class="navbar-item-sm navbar-item-md navbar-item-lg">
+            Login in now
+        </div>
+        <div class="navbar-item-sm navbar-item-md navbar-item-lg">
+            Follow us
+        </div>
+        <div class="navbar-item-sm navbar-item-md navbar-item-lg">
+            About us
+        </div>
+        <div class="navbar-item-sm navbar-item-md navbar-item-lg">
+            Whats new
+        </div>
+    </div>
+    <div class="navbar-user">
+
+        <div class="navbar-user-separator navbar-user-separator-hide"></div>
+        <p id="navbar-user-name-text" class="navbar-username-sm navbar-username-md navbar-username-lg" style="margin-top:15px">
+            no user
+        </p>
+        <img id="navbar-user-avatar-img" class="navbar-user-avatar-sm navbar-user-avatar-md navbar-user-avatar-lg" src="" alt="">
+    </div>
+    @*<div id="navbar-burger" class="navbar-right-hidde-sm navbar-right-hidde-md navbar-right-hidde-lg navbar-right-hidde">
+        <button onclick="@OnHamburgerClick" style="border-width:0px;">
+                <img src="./Images/burger.png" alt="" style="width: 30px; height: 30px;">
+        </button>
+    </div>*@
+    @*<div class="navbar-drop-down-container navbar-hide" style="background-color:pink; height:50px;">
+        <div class="navbar-drop-down-menu">
+            salam
+        </div>
+    </div>*@
+</nav>
+@code {
+    private async void OnHamburgerClick()
+    {
+        await JS.InvokeVoidAsync("OnHamburgerClick");
+    }
+}
