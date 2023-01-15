@@ -22,7 +22,7 @@ namespace ChatAppAPI.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("ChatAppAPI.Models.ChatKeyModel", b =>
+            modelBuilder.Entity("GhostLibrary.Models.ChatKeyModel", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
@@ -51,7 +51,7 @@ namespace ChatAppAPI.Migrations
                     b.ToTable("ChatKeyModels");
                 });
 
-            modelBuilder.Entity("ChatAppAPI.Models.ChatMessageModel", b =>
+            modelBuilder.Entity("GhostLibrary.Models.ChatMessageModel", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
@@ -80,7 +80,7 @@ namespace ChatAppAPI.Migrations
                     b.ToTable("ChatMsjModels");
                 });
 
-            modelBuilder.Entity("ChatAppAPI.Models.ChatModel", b =>
+            modelBuilder.Entity("GhostLibrary.Models.ChatModel", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
@@ -93,6 +93,9 @@ namespace ChatAppAPI.Migrations
 
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("LastMessage")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("MsjCount")
                         .HasColumnType("int");
@@ -112,7 +115,7 @@ namespace ChatAppAPI.Migrations
                     b.ToTable("ChatModels");
                 });
 
-            modelBuilder.Entity("ChatAppAPI.Models.CredentialsModel", b =>
+            modelBuilder.Entity("GhostLibrary.Models.CredentialsModel", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
@@ -124,17 +127,21 @@ namespace ChatAppAPI.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Password")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<string>("Username")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
 
                     b.HasKey("ID");
 
                     b.ToTable("CredentialsModel");
                 });
 
-            modelBuilder.Entity("ChatAppAPI.Models.MediaModel", b =>
+            modelBuilder.Entity("GhostLibrary.Models.MediaModel", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -153,7 +160,36 @@ namespace ChatAppAPI.Migrations
                     b.ToTable("MediaModels");
                 });
 
-            modelBuilder.Entity("ChatAppAPI.Models.PersonModel", b =>
+            modelBuilder.Entity("GhostLibrary.Models.NewsModel", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("MediaID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("MediaID");
+
+                    b.ToTable("NewsModels");
+                });
+
+            modelBuilder.Entity("GhostLibrary.Models.PersonModel", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
@@ -177,6 +213,9 @@ namespace ChatAppAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("PersonType")
+                        .HasColumnType("int");
+
                     b.Property<string>("Vorname")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -190,15 +229,41 @@ namespace ChatAppAPI.Migrations
                     b.ToTable("PersonModels");
                 });
 
-            modelBuilder.Entity("ChatAppAPI.Models.ChatKeyModel", b =>
+            modelBuilder.Entity("GhostLibrary.Models.ZettelModel", b =>
                 {
-                    b.HasOne("ChatAppAPI.Models.PersonModel", "Person")
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("ZettelModels");
+                });
+
+            modelBuilder.Entity("GhostLibrary.Models.ChatKeyModel", b =>
+                {
+                    b.HasOne("GhostLibrary.Models.PersonModel", "Person")
                         .WithMany()
                         .HasForeignKey("PersonID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ChatAppAPI.Models.ChatModel", "Chat")
+                    b.HasOne("GhostLibrary.Models.ChatModel", "Chat")
                         .WithMany()
                         .HasForeignKey("ReferenceID")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -209,15 +274,15 @@ namespace ChatAppAPI.Migrations
                     b.Navigation("Person");
                 });
 
-            modelBuilder.Entity("ChatAppAPI.Models.ChatMessageModel", b =>
+            modelBuilder.Entity("GhostLibrary.Models.ChatMessageModel", b =>
                 {
-                    b.HasOne("ChatAppAPI.Models.PersonModel", "Person")
+                    b.HasOne("GhostLibrary.Models.PersonModel", "Person")
                         .WithMany()
                         .HasForeignKey("PersonID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ChatAppAPI.Models.ChatModel", "Chat")
+                    b.HasOne("GhostLibrary.Models.ChatModel", "Chat")
                         .WithMany()
                         .HasForeignKey("ReferenceID")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -228,15 +293,15 @@ namespace ChatAppAPI.Migrations
                     b.Navigation("Person");
                 });
 
-            modelBuilder.Entity("ChatAppAPI.Models.ChatModel", b =>
+            modelBuilder.Entity("GhostLibrary.Models.ChatModel", b =>
                 {
-                    b.HasOne("ChatAppAPI.Models.PersonModel", "OwnerModel")
+                    b.HasOne("GhostLibrary.Models.PersonModel", "OwnerModel")
                         .WithMany()
                         .HasForeignKey("OwnerID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ChatAppAPI.Models.PersonModel", "TargetModel")
+                    b.HasOne("GhostLibrary.Models.PersonModel", "TargetModel")
                         .WithMany()
                         .HasForeignKey("TargetID")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -247,15 +312,26 @@ namespace ChatAppAPI.Migrations
                     b.Navigation("TargetModel");
                 });
 
-            modelBuilder.Entity("ChatAppAPI.Models.PersonModel", b =>
+            modelBuilder.Entity("GhostLibrary.Models.NewsModel", b =>
                 {
-                    b.HasOne("ChatAppAPI.Models.CredentialsModel", "Credentials")
+                    b.HasOne("GhostLibrary.Models.MediaModel", "Media")
+                        .WithMany()
+                        .HasForeignKey("MediaID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Media");
+                });
+
+            modelBuilder.Entity("GhostLibrary.Models.PersonModel", b =>
+                {
+                    b.HasOne("GhostLibrary.Models.CredentialsModel", "Credentials")
                         .WithMany()
                         .HasForeignKey("CredentialsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ChatAppAPI.Models.MediaModel", "Media")
+                    b.HasOne("GhostLibrary.Models.MediaModel", "Media")
                         .WithMany()
                         .HasForeignKey("MediaId")
                         .OnDelete(DeleteBehavior.Cascade)

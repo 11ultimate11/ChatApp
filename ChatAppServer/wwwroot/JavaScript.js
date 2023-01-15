@@ -1,10 +1,13 @@
-﻿
+﻿'use strict'
 let username = '';
 let path = '';
 let currentState = false;
 
 function myFunc(msj) {
     alert(msj)
+}
+function DisplayAlert(msj) {
+    alert(msj);
 }
 window.WriteCookie = {
 
@@ -91,6 +94,10 @@ function SidebarChangeTab(id) {
     oldTab.classList.remove("sidebar-item-active");
     newTab.classList.add("sidebar-item-active");
     if (ids === "#sbChat") {
+        let body = document.body;
+        if (body != null) {
+            body.classList.add("body-non-scroll");
+        }
         if (currentState) {
             AnimateSecondarySidebar(false);
             currentState = false;
@@ -101,10 +108,38 @@ function SidebarChangeTab(id) {
         }
         
     } else {
+        let body = document.body;
+        if (body != null) {
+            body.classList.remove("body-non-scroll");
+        }
         if (currentState) {
             AnimateSecondarySidebar(false);
             currentState = false;
         }
+    }
+}
+function OnNavigationTab(tabID, navigationbarID) {
+    let navigationBar = document.getElementById(navigationbarID);
+    if (navigationBar != null) {
+        RemoveActiveFromSecondaryNavbar();
+        RemoveActiveFromMainNavbar();
+
+        let child = document.querySelector("#" + tabID);
+        if (child != null) {
+            child.classList.add(navigationbarID === "primaryNavbar" ? "navbar-item-active" : "sidebar-item-active");
+        }
+    }
+}
+function RemoveActiveFromMainNavbar() {
+    let activeChild = document.querySelector(".navbar-item-active");
+    if (activeChild != null) {
+        activeChild.classList.remove("navbar-item-active");
+    }
+}
+function RemoveActiveFromSecondaryNavbar() {
+    let activeChild = document.querySelector(".sidebar-item-active");
+    if (activeChild != null) {
+        activeChild.classList.remove("sidebar-item-active");
     }
 }
 

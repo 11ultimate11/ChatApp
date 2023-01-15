@@ -1,0 +1,13 @@
+﻿<div class="zettel-main-container">
+    <button @onclick="(async()=> await HideCallback.InvokeAsync())">X</button>
+    <h1>@Zettel?.Title</h1>
+    <p>@Zettel?.Content</p>
+</div>
+
+@code {
+    [Parameter]
+    public ZettelModel? Zettel { get; set; }
+    [Parameter]
+    public EventCallback HideCallback { get; set; }
+
+}

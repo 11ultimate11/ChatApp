@@ -1,6 +1,6 @@
 ﻿using ChatApp.Services;
 using ChatAppAPI.Helpers;
-using ChatAppAPI.Models;
+using GhostLibrary.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

@@ -1,16 +1,19 @@
-﻿@using GhostLibrary.Models;
+﻿@using ChatAppServer.Services;
+@using GhostLibrary.Models;
 @using System.Diagnostics;
+@using GhostLibrary.Services.Interfaces;
 @inject IJSRuntime JS;
+@inject IApiProcessor _api;
 
 
 
 <div onclick="@HandleClick" class="sidebar-secondary-item">
     <div>
-        <img src="./Images/1672680131949[57].jpg" />
+        <img src="@_img" />
     </div>
     <div>
-        <p class="siderbar-secondary-item-name">Person Name</p>
-        <p class="siderbar-secondary-item-msj">Last message tipped over this time of the galaxy and the star ...</p>
+        <p class="siderbar-secondary-item-name">@target?.Nachname @target?.Vorname</p>
+        <p class="siderbar-secondary-item-msj">@Chat?.LastMessage</p>
     </div>
     <div class="sidebar-secondary-status">
     </div>
@@ -25,14 +28,30 @@
     [Parameter]
     public ChatModel? Chat { get; set; }
     private PersonModel? target;
+    private string? _img;
     private async Task HandleClick()
     {
         Debug.WriteLine("clicked");
         await JS.InvokeVoidAsync("AnimateSecondarySidebar", false);
+        var param = new string[] { "sbChat", "secondaryNavbar" };
+        await JS.InvokeVoidAsync("OnNavigationTab", param);
         await InovkeOnMainPage.InvokeAsync(Chat);
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await DownloadPerson();
+        }
     }
     private async Task DownloadPerson()
     {
-        
+        var myId = await TokenIO.ReadToken("personID", JS);
+        OwnerID = int.Parse(myId);
+        var id = Chat?.OwnerID == OwnerID ? Chat?.TargetID : Chat?.OwnerID;
+        var token = await TokenIO.ReadToken("token", JS);
+        target = await Helper.DownloadPerson(id.GetValueOrDefault(), _api, token);
+        _img = Helper.GetImgFromBytes(target?.Media?.Data!);
+        await InvokeAsync(() => StateHasChanged());
     }
 }

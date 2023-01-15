@@ -1,0 +1,79 @@
+﻿@using static GhostLibrary.Helpers.Enums;
+
+<div class="antrag-container">
+    <img src="@img_url"/>
+    <select bind-value="selected_function" bind-value:event="onchange" @onchange="HandleSelectionChangedFunction">
+        @foreach (var item in functions)
+        {
+            <option>@item</option>
+        }
+    </select>
+    <select @bind="selected_jobType">
+        @foreach (var item in jobsType)
+        {
+            <option>@item</option>
+        }
+    </select>
+    <EditForm Model="job">
+        <DataAnnotationsValidator></DataAnnotationsValidator>
+        <ValidationSummary></ValidationSummary>
+        <input class="antrag-container-item" placeholder="Vergütung" @bind="job.Vergütung"/>
+        <textarea maxlength="500" class="antrag-container-item"  @bind="job.Content" placeholder="Job beschreibung"></textarea>
+        <button class="antrag-container-btn" type="submit">Absenden</button>
+    </EditForm>
+</div>
+
+
+@code {
+    private JobModel job = new();
+    private List<string> functions = new();
+    private List<string> jobsType = new();
+    private List<string> images = new()
+    {
+        "./Images/nurse.jpg",
+        "./Images/cleaning.jpg",
+        "./Images/kitchen.jpg",
+        "./Images/pflegehelfer.jpg",
+    };
+    private string img_url = "./Images/nurse.jpg";
+    private void HandleSelectionChangedFunction(ChangeEventArgs e)
+    {
+        if (e.Value?.ToString() == JobFunction.Pflegefachkraft.ToString())
+        {
+            img_url = images.FirstOrDefault()!;
+        }
+        else if (e.Value?.ToString() == JobFunction.Pflegeheler.ToString())
+        {
+            img_url = images[3];
+        }
+        else if (e.Value?.ToString() == JobFunction.Küchenkraft.ToString() || e.Value?.ToString() == JobFunction.Koch.ToString())
+        {
+            img_url = images[2];
+        }
+        else if (e.Value?.ToString() == JobFunction.Reinigungskraft.ToString())
+        {
+            img_url = images[1];
+        }
+        foreach (var item in Enum.GetValues(typeof(JobFunction)))
+        {
+            if(((JobFunction)item).ToString() == selected_function)
+            {
+                job.Position = (JobFunction)item;
+            } 
+        }
+        StateHasChanged();
+    }
+    private string? selected_jobType;
+    private string? selected_function;
+    protected override void OnInitialized()
+    {
+        foreach (var item in Enum.GetValues(typeof(JobType)))
+        {
+            jobsType.Add(((JobType)item).ToString());
+        }
+        foreach (var item in Enum.GetValues(typeof(JobFunction)))
+        {
+            functions.Add(((JobFunction)item).ToString());
+        }
+    }
+}

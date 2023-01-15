@@ -2,29 +2,49 @@
 @inject IJSRuntime JS;
 
 
-<div class="sidebar-container">
-    <button id="sbProfile" onclick="@OnProfilClick" class="sidebar-item-sm sidebar-item sidebar-button sidebar-button-sm sidebar-item-active" title="Go to your profile">
-        <img class="sidebar-item-img sidebar-item-img-sm" src="./Images/profile.png" />
-        <p>Profile</p>
+<div id="secondaryNavbar" class="sidebar-container-sm sidebar-container">
+    <button id="sbProfile" @onclick="OnHomeClick" class="sidebar-item-sm sidebar-item sidebar-button sidebar-button-sm sidebar-item-active" title="Go to your profile">
+        <img class="sidebar-item-img sidebar-item-img-sm" src="./Images/home.png" />
+        <p>Home</p>
     </button>
-    <button id="sbSearch" onclick="@OnSearchClick" class="sidebar-item-sm sidebar-item sidebar-button sidebar-button-sm">
-        <img class="sidebar-item-img sidebar-item-img-sm" src="./Images/search.png" />
-        <p>Search</p>
-    </button>
-    <button id="sbChat" onclick="@OnChatClick" class="sidebar-item-sm sidebar-item sidebar-button sidebar-button-sm">
+    <button id="sbChat" @onclick="OnChatClick" class="sidebar-item-sm sidebar-item sidebar-button sidebar-button-sm @hide_class">
         <img class="sidebar-item-img sidebar-item-img-sm" src="./Images/chat.png" />
         <p>Chats</p>
     </button>
-    <button id="sbEdit" onclick="@OnEditClick" class="sidebar-item-sm sidebar-item sidebar-button sidebar-button-sm">
-        <img class="sidebar-item-img sidebar-item-img-sm" src="./Images/edit2.png" />
-        <p>Preferences</p>
+    <button id="sbComplain" @onclick="OnComplainClick" class="sidebar-item-sm sidebar-item sidebar-button sidebar-button-sm @hide_class">
+        <img class="sidebar-item-img sidebar-item-img-sm" src="./Images/complain.png" />
+        <p>Beschwerde</p>
+    </button>
+    <button id="sbAntrag" @onclick="OnAntragClick" class="sidebar-item-sm sidebar-item sidebar-button sidebar-button-sm">
+        <img class="sidebar-item-img sidebar-item-img-sm" src="./Images/antrag.png" />
+        <p>Antrag</p>
+    </button>
+    <button id="sbJob" @onclick="OnJobClick" class="sidebar-item-sm sidebar-item sidebar-button sidebar-button-sm">
+        <img class="sidebar-item-img sidebar-item-img-sm" src="./Images/job.png" />
+        <p>Jobs</p>
+    </button>
+    <butto @onclick="OnImpressumClick" class="sidebar-item-sm sidebar-item sidebar-button sidebar-button-sm">
+        <img class="sidebar-item-img sidebar-item-img-sm" src="./Images/impressum.png" />
+        <p>Impressum</p>
+    </butto>
+    <button id="sbCovid" @onclick="OnCovidClick" class="sidebar-item-sm sidebar-item sidebar-button sidebar-button-sm">
+        <img class="sidebar-item-img sidebar-item-img-sm" src="./Images/cropped-corona-icon.png" />
+        <p>Covid</p>
+    </button>
+    <button id="sbSettings" @onclick="OnSettingsClick" class="sidebar-item-sm sidebar-item sidebar-button sidebar-button-sm @hide_administrator">
+        <img class="sidebar-item-img sidebar-item-img-sm" src="./Images/settings.png" />
+        <p>Einstellungen</p>
     </button>
 </div>
 
 
 
 @code {
-    private MainpageState mainpageState = MainpageState.profile;
+    private bool sideBarSecVis;
+
+    private string hide_class = "sidebar-item-hide";
+    private string hide_administrator = "sidebar-item-admin-hide";
+    private MainpageState mainpageState = MainpageState.home;
     [Parameter]
     public EventCallback<MainpageState> On_tab_change { get; set; }
 
@@ -32,13 +52,19 @@
     {
         mainpageState = MainpageState.Chats;
         //await On_tab_change.InvokeAsync(mainpageState);
-        await JS.InvokeVoidAsync("SidebarChangeTab", "sbChat");
+        sideBarSecVis = !sideBarSecVis;
+        await JS.InvokeVoidAsync("AnimateSecondarySidebar", sideBarSecVis);
+
+
     }
-    private async Task OnProfilClick()
+    private async Task OnHomeClick()
     {
-        mainpageState = MainpageState.profile;
+        mainpageState = MainpageState.home;
         await On_tab_change.InvokeAsync(mainpageState);
-        await JS.InvokeVoidAsync("SidebarChangeTab", "sbProfile");
+        //await JS.InvokeVoidAsync("SidebarChangeTab", "sbProfile");
+
+        var param = new string[] { "sbProfile", "secondaryNavbar" };
+        await JS.InvokeVoidAsync("OnNavigationTab", param);
     }
     private async Task OnSearchClick()
     {
@@ -50,6 +76,56 @@
     {
         mainpageState = MainpageState.Preferences;
         await On_tab_change.InvokeAsync(mainpageState);
-        await JS.InvokeVoidAsync("SidebarChangeTab", "sbEdit");
+        //await JS.InvokeVoidAsync("SidebarChangeTab", "sbEdit");
+
+        var param = new string[] { "sbEdit", "secondaryNavbar" };
+        await JS.InvokeVoidAsync("OnNavigationTab", param);
+    }
+    private async Task OnCovidClick()
+    {
+        mainpageState = MainpageState.covid;
+        await On_tab_change.InvokeAsync(mainpageState);
+        //await JS.InvokeVoidAsync("SidebarChangeTab", "sbCovid");
+
+        var param = new string[] { "sbCovid", "secondaryNavbar" };
+        await JS.InvokeVoidAsync("OnNavigationTab", param);
+    }
+    private async Task OnAntragClick()
+    {
+        mainpageState = MainpageState.antrag;
+        await On_tab_change.InvokeAsync(mainpageState);
+        var param = new string[] { "sbAntrag", "secondaryNavbar" };
+        await JS.InvokeVoidAsync("OnNavigationTab", param);
+    }
+    private async Task OnJobClick()
+    {
+        mainpageState = MainpageState.job;
+        await On_tab_change.InvokeAsync(mainpageState);
+        var param = new string[] { "sbJob", "secondaryNavbar" };
+        await JS.InvokeVoidAsync("OnNavigationTab", param);
+    }
+    private async Task OnComplainClick()
+    {
+        mainpageState = MainpageState.complain;
+        await On_tab_change.InvokeAsync(mainpageState);
+        var param = new string[] { "sbComplain", "secondaryNavbar" };
+        await JS.InvokeVoidAsync("OnNavigationTab", param);
+    }
+    private async Task OnSettingsClick()
+    {
+        mainpageState = MainpageState.settings;
+        await On_tab_change.InvokeAsync(mainpageState);
+        var param = new string[] { "sbSettings", "secondaryNavbar" };
+        await JS.InvokeVoidAsync("OnNavigationTab", param);
+    }
+    private async Task OnImpressumClick()
+    {
+        //TODO - impressum popup
+    }
+    public async Task HideShowMenu(bool value , PersonModel model)
+    {
+        hide_class = !value ? "sidebar-item-hide" : string.Empty;
+        hide_administrator = (model is not null && model.Position > Enums.PersonType.WBL) ? string.Empty : "sidebar-item-admin-hide";
+        await InvokeAsync(() => StateHasChanged());
     }
 }

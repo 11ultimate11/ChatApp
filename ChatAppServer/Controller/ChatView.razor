@@ -17,12 +17,12 @@
 
 
 
-<div class="chat-main-container">
+<div class="chat-main-container-sm chat-main-container">
     <div class="container-header">
         <img class="container-header-avatar" src="@_imgUrl" />
-        <p class="container-header-label" style="margin-top:10px; margin-left:5px;">@Person?.Nachname @Person?.Vorname</p>
+        <p class="container-header-label" style="margin-top:10px; margin-left:5px;">@_person?.Nachname @_person?.Vorname</p>
     </div>
-    <div class="chat-container">
+    <div class="chat-container-sm chat-container">
 
         @foreach (var item in _models.Reverse<ChatMessageModel>())
         {
@@ -38,7 +38,7 @@
     </div>
     <div class="chat-controllers">
         <input class="chat-input" @bind="@_input" />
-        <button class="chat-btn" onclick="@Add_new">Send</button>
+        <button class="chat-btn" @onclick="Add_new">Send</button>
     </div>
 </div>
 
@@ -49,17 +49,15 @@
 
 
 @code {
-    [Parameter]
-    public HubConnection? HubConnection { get; set; }
     private string? _input;
     private string? _token;
     private int _personID;
     private List<ChatMessageModel> _models { get; set; } = new();
     private string _imgUrl => GetImgUrl();
     [Parameter]
-    public ChatModel? SelectedChat { get; set; }
-    [Parameter]
-    public PersonModel? Person { get; set; }
+    public EventCallback<string[]> Broadcast { get; set; }
+    private ChatModel? _selectedChat { get; set; }
+    private PersonModel? _person;
     public void AddNewMsj(ChatMessageModel model)
     {
         _models.Add(model);
@@ -73,7 +71,7 @@
                 PersonID = _personID,
                 Content = _input,
                 CreatedDate = DateTime.Now,
-                ReferenceID = SelectedChat.ID
+                ReferenceID = _selectedChat.ID
             };
         _input = string.Empty;
         var result = await _api.PostAsync(model, "Chat/AddChatMsj", _token!);
@@ -82,30 +80,30 @@
             _models.Add(model);
             try
             {
-                HubConnection?.InvokeAsync("BroadcastMessage", JsonConvert.SerializeObject(model), $"Person{_personID}");
+                await Broadcast.InvokeAsync(new string[] { JsonConvert.SerializeObject(model) , $"Person{_person?.ID}" });
             }
             catch (Exception ex)
             {
                 Debug.WriteLine(ex.Message);
             }
-            
+
         }
     }
     private string GetImgUrl()
     {
-        if (Person?.Media is null)
+        if (_person?.Media is null)
         {
             return "./Images/chatt-app-logo.png";
         }
         else
         {
-            return Helper.GetImgFromBytes(Person?.Media?.Data);
+            return Helper.GetImgFromBytes(_person?.Media?.Data);
         }
     }
     public async void ChangeSelectedChat(ChatModel model)
     {
         if (model is null) return;
-        SelectedChat = model;
+        _selectedChat = model;
         if (string.IsNullOrEmpty(_token))
         {
 
@@ -118,17 +116,17 @@
         List<Task> tasks = new()
         {
             Task.Run(DownloadMessages),
-            Task.Run(async()=>  Person = await Helper.DownloadPerson(fremdID , _api, _token))
+            Task.Run(async()=>  _person = await Helper.DownloadPerson(fremdID , _api, _token))
         };
         await Task.WhenAll(tasks);
-        if(Person is not null)
+        if(_person is not null)
         {
             await InvokeAsync(() => StateHasChanged());
         }
     }
     private async Task DownloadMessages()
     {
-        var result = await _api.GetStringAsync($"Chat/GetMessages/{SelectedChat?.ID}/{_models.Count}" , _token!);
+        var result = await _api.GetStringAsync($"Chat/GetMessages/{_selectedChat?.ID}/{_models.Count}" , _token!);
         if (!string.IsNullOrEmpty(result))
         {
             var msjs = JsonConvert.DeserializeObject<List<ChatMessageModel>>(result);
@@ -138,6 +136,17 @@
             }
         }
     }
+    public async void OnMessageIncome(string json)
+    {
+        var model = JsonConvert.DeserializeObject<ChatMessageModel>(json);
+        if (model != null)
+        {
+            if(_selectedChat?.ID == model.ReferenceID)
+            {
+                _models.Add(model);
+                await InvokeAsync(() => StateHasChanged());
+            }
+        }
+    }
 
-    
 }

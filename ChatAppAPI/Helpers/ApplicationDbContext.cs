@@ -1,4 +1,5 @@
-﻿using ChatAppAPI.Models;
+﻿
+using GhostLibrary.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace ChatAppAPI.Helpers
@@ -15,5 +16,7 @@ namespace ChatAppAPI.Helpers
         public DbSet<ChatModel> ChatModels { get; set; }
         public DbSet<ChatMessageModel> ChatMsjModels { get; set; }
         public DbSet<ChatKeyModel> ChatKeyModels { get; set; }
+        public DbSet<ZettelModel> ZettelModels { get; set; }
+        public DbSet<NewsModel> NewsModels { get; set; }
     }
 }

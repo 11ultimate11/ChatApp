@@ -12,7 +12,7 @@ public class ChatHub : Hub
     public async Task BroadcastMessage(string json , string channel)
     {
         await Clients.Group(channel).SendAsync("Broadcast" , json);
-        //await Clients.Caller.SendAsync("Debug", $"{Context.ConnectionId} call on group {channel}");
+        await Clients.Caller.SendAsync("Debug", $"{Context.ConnectionId} call on group {channel}");
     }
     public async Task Register(string channel)
     {

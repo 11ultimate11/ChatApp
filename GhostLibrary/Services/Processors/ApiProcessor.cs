@@ -87,7 +87,7 @@ namespace GhostLibrary.Services.Processor
             var httpClient = new HttpClient();
             AddHeader(httpClient, token);
             var data = new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json");
-            Uri uri = new Uri($"{_baseUrlAdress}/{route}");
+            Uri uri = new Uri($"{_baseUrlAdress}{route}");
             httpClient.BaseAddress= uri;
             var result = await httpClient.PostAsync(uri, data);
             httpClient.Dispose();
@@ -114,7 +114,7 @@ namespace GhostLibrary.Services.Processor
             var httpClient = new HttpClient();
             AddHeader(httpClient, token);
             var data = new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json");
-            Uri uri = new Uri($"{_baseUrlAdress}/{route}");
+            Uri uri = new Uri($"{_baseUrlAdress}{route}");
             httpClient.BaseAddress= uri;
             var result = await httpClient.PutAsync(uri, data);
             httpClient.Dispose();

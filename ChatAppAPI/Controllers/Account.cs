@@ -1,10 +1,6 @@
-﻿
-using ChatApp.Services;
-using ChatAppAPI.Helpers;
-using ChatAppAPI.Models;
-using Microsoft.AspNetCore.Authentication;
+﻿using ChatAppAPI.Helpers;
+using GhostLibrary.Models;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
@@ -145,11 +141,33 @@ namespace ChatAppAPI.Controllers
             await _db.SaveChangesAsync();
             return Ok(true);
         }
-        [HttpGet("test")]
+        [HttpPost("test")]
         [AllowAnonymous]
-        public IActionResult GEt()
+        public IActionResult GEt([FromBody] CredentialsModel model)
         {
-            return Ok("ok");
+            if (model is null || string.IsNullOrEmpty(model.Username) || string.IsNullOrEmpty(model.Password)) return BadRequest("credentials not ok");
+            try
+            {
+                var cred = _db.CredentialsModel.FirstOrDefault(x => x.Username!.Equals(model.Username) && x.Password == model.Password);
+                if (cred is null) return BadRequest("invalid pass or username");
+                var person = _db.PersonModels.FirstOrDefault(x => x.CredentialsId == cred.ID);
+                if (person is null) { return BadRequest("credentials not found"); }
+                person.Media = _db.MediaModels.Find(person.MediaId);
+                person.Credentials!.PersonID = person.ID;
+                var token = _jwt.GenerateToken(person.Credentials!);
+                string json = JsonConvert.SerializeObject(person);
+                return Ok(json);
+                JsonObject obj = new()
+                {
+                    { "person" , JsonConvert.SerializeObject(person) },
+                    { "token" , token },
+                };
+                return Ok(obj);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

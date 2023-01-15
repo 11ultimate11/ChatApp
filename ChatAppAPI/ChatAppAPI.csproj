@@ -23,4 +23,8 @@
     <Folder Include="Migrations\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\GhostLibrary\GhostLibrary.csproj" />
+  </ItemGroup>
+
 </Project>

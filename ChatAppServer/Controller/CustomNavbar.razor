@@ -1,21 +1,27 @@
-﻿@inject IJSRuntime JS;
-<nav>
+﻿@using static ChatAppServer.Services.Enums;
+@inject IJSRuntime JS;
+<nav id="primaryNavbar">
     <div class="navbar-left">
-        <img src="./Images/chatt-app-logo.png" alt="" class=" navbar-left-sm navbar-left-md navbar-left-lg">
-        <p class="navbar-logo-name-sm navbar-logo-name-md navbar-logo-name-lg navbar-left-logo-hidde " style="margin-top:15px">Ghost App</p>
+        <img src="./Images/sun.jpg" alt="" class=" navbar-left-sm navbar-left-md navbar-left-lg">
+        <p class="navbar-logo-name-sm navbar-logo-name-md navbar-logo-name-lg navbar-left-logo-hidde " style="margin-top:15px">
+            Pflegecentrum Sonnenschein
+        </p>
     </div>
     <div id="navbar-items" class="navbar-middle navbar-middle-hidde">
-        <div class="navbar-item-sm navbar-item-md navbar-item-lg">
-            Login in now
+        <div id="navTeam" @onclick="OnTeamClick" class="navbar-item-sm navbar-item-md navbar-item-lg">
+            Team
         </div>
-        <div class="navbar-item-sm navbar-item-md navbar-item-lg">
-            Follow us
+        <div id="navHaus" class="navbar-item-sm navbar-item-md navbar-item-lg">
+            Häuser
         </div>
-        <div class="navbar-item-sm navbar-item-md navbar-item-lg">
-            About us
+        <div id="navMobile" @onclick="OnMobileClick" class="navbar-item-sm navbar-item-md navbar-item-lg">
+            Mobile Pflege
         </div>
-        <div class="navbar-item-sm navbar-item-md navbar-item-lg">
-            Whats new
+        <div id="navAbout" @onclick="OnAboutClick" class="navbar-item-sm navbar-item-md navbar-item-lg">
+            Über uns
+        </div>
+        <div id="navEinloggen" class="navbar-item-sm navbar-item-md navbar-item-lg" @onclick="OnLoginClick">
+            @einloggen_text
         </div>
     </div>
     <div class="navbar-user">
@@ -38,8 +44,60 @@
     </div>*@
 </nav>
 @code {
+    private string einloggen_text = "Einloggen";
+    [Parameter]
+    public EventCallback<MainpageState> Callback { get; set; }
+    [Parameter]
+    public EventCallback<bool> OnLoginToggle { get; set; }
     private async void OnHamburgerClick()
     {
         await JS.InvokeVoidAsync("OnHamburgerClick");
+    }
+    private async Task OnAboutClick()
+    {
+        await Callback.InvokeAsync(MainpageState.about);
+        var param = new string[] { "navAbout", "primaryNavbar" };
+        await JS.InvokeVoidAsync("OnNavigationTab", param);
+    }
+    private async Task OnMobileClick()
+    {
+        await Callback.InvokeAsync(MainpageState.mobile);
+        var param = new string[] { "navMobile", "primaryNavbar" };
+        await JS.InvokeVoidAsync("OnNavigationTab", param);
+    }
+    private async Task OnTeamClick()
+    {
+        await Callback.InvokeAsync(MainpageState.team);
+        var param = new string[] { "navTeam", "primaryNavbar" };
+        await JS.InvokeVoidAsync("OnNavigationTab", param);
+    }
+    private async Task OnLoginClick()
+    {
+        if (einloggen_text.Equals("Einloggen"))
+        {
+            await OnLoginToggle.InvokeAsync(true);
+        }
+        else
+        {
+            await OnLoginToggle.InvokeAsync(false);
+            einloggen_text = "Einloggen";
+            await InvokeAsync(() => StateHasChanged());
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            if (einloggen_text.Equals("Einloggen"))
+            {
+                
+            }
+        }
+    }
+    public async Task OnLogin(bool result)
+    {
+        einloggen_text = result ? "Ausloggen" : "Einloggen";
+        await InvokeAsync(() => StateHasChanged());
     }
 }

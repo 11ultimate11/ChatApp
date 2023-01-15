@@ -5,7 +5,11 @@
 
        public enum MainpageState
         {
-            profile, search, Chats, Preferences
+            home, search, Chats, Preferences , covid ,about , mobile , team , job , complain , antrag , settings
+        }
+        public enum NavigationBar
+        {
+            primary , secundary
         }
     }
 }
