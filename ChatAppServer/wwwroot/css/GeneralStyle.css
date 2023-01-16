@@ -345,6 +345,8 @@
     padding: .5em;
     margin-top: 1em;
     max-width: 1000px;
+    opacity: 0;
+    animation: ease-in-out newsAnimation .25s 3.25s forwards;
 }
 
     .news-container img {
@@ -466,4 +468,12 @@
     border-width: 1px;
     background-color:dodgerblue;
     color:white;
+}
+@keyframes newsAnimation {
+    from {
+        opacity:0;
+    }
+    to {
+        opacity:1;
+    }
 }

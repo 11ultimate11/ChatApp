@@ -213,7 +213,10 @@
             _imgSrc = @"data:image/jpeg;base64,"+ Convert.ToBase64String(model.Media.Data);
             await JS.InvokeVoidAsync("SetUserData", new string[] { _imgSrc!, $"{model.Nachname} {model.Vorname}" });
             await InvokeAsync(() => StateHasChanged());
-            await antragComponent?.Reload(model);
+            if(antragComponent is not null && model is not null)
+            {
+                await antragComponent.Reload(model);
+            }
         }
         await customNavbar?.OnLogin(model is not null);
 

@@ -1,4 +1,8 @@
-﻿@using static GhostLibrary.Helpers.Enums;
+﻿@using ChatAppServer.Services;
+@using GhostLibrary.Services.Interfaces;
+@using static GhostLibrary.Helpers.Enums;
+@inject IJSRuntime _js;
+@inject IApiProcessor _api;
 
 <div class="antrag-container">
     <img src="@img_url"/>
@@ -8,13 +12,13 @@
             <option>@item</option>
         }
     </select>
-    <select @bind="selected_jobType">
+    <select bind-value="selected_jobType" bind-value:event="onchange" @onchange="HandleSelectionChangedJobtype">
         @foreach (var item in jobsType)
         {
             <option>@item</option>
         }
     </select>
-    <EditForm Model="job">
+    <EditForm Model="job" OnValidSubmit="OnSubmit">
         <DataAnnotationsValidator></DataAnnotationsValidator>
         <ValidationSummary></ValidationSummary>
         <input class="antrag-container-item" placeholder="Vergütung" @bind="job.Vergütung"/>
@@ -28,6 +32,8 @@
     private JobModel job = new();
     private List<string> functions = new();
     private List<string> jobsType = new();
+    private string? selected_jobType;
+    private string? selected_function;
     private List<string> images = new()
     {
         "./Images/nurse.jpg",
@@ -41,30 +47,45 @@
         if (e.Value?.ToString() == JobFunction.Pflegefachkraft.ToString())
         {
             img_url = images.FirstOrDefault()!;
+            job.Position = JobFunction.Pflegefachkraft;
         }
-        else if (e.Value?.ToString() == JobFunction.Pflegeheler.ToString())
+        else if (e.Value?.ToString() == JobFunction.Pflegehelfer.ToString())
         {
             img_url = images[3];
+            job.Position = JobFunction.Pflegehelfer;
         }
-        else if (e.Value?.ToString() == JobFunction.Küchenkraft.ToString() || e.Value?.ToString() == JobFunction.Koch.ToString())
+        else if (e.Value?.ToString() == JobFunction.Küchenkraft.ToString())
         {
             img_url = images[2];
+            job.Position = JobFunction.Küchenkraft;
+        }
+        else if (e.Value?.ToString() == JobFunction.Koch.ToString())
+        {
+            img_url = images[2];
+            job.Position = JobFunction.Koch;
         }
         else if (e.Value?.ToString() == JobFunction.Reinigungskraft.ToString())
         {
             img_url = images[1];
-        }
-        foreach (var item in Enum.GetValues(typeof(JobFunction)))
-        {
-            if(((JobFunction)item).ToString() == selected_function)
-            {
-                job.Position = (JobFunction)item;
-            } 
+            job.Position = JobFunction.Reinigungskraft;
         }
         StateHasChanged();
     }
-    private string? selected_jobType;
-    private string? selected_function;
+    private void HandleSelectionChangedJobtype(ChangeEventArgs e)
+    {
+        if(e.Value!.ToString() == (JobType.Vollzeit).ToString())
+        {
+            job.Hours = JobType.Vollzeit;
+        }
+        else if (e.Value!.ToString() == (JobType.Teilzeit).ToString())
+        {
+            job.Hours = JobType.Teilzeit;
+        }
+        else if (e.Value!.ToString() == (JobType.Minijob).ToString())
+        {
+            job.Hours = JobType.Minijob;
+        }
+    }
     protected override void OnInitialized()
     {
         foreach (var item in Enum.GetValues(typeof(JobType)))
@@ -75,5 +96,20 @@
         {
             functions.Add(((JobFunction)item).ToString());
         }
+    }
+    private async Task OnSubmit()
+    {
+        var token = await TokenIO.ReadToken("token", _js);
+        var result = await _api.PostAsync(job, "Jobs/AddJob", token);
+        if (result)
+        {
+            await _js.InvokeVoidAsync("DisplayAlert", "Den Job wurde erfolgreich erstellt");
+        }
+        else
+        {
+            await _js.InvokeVoidAsync("DisplayAlert", "Something went wrong , please try again later");
+        }
+        job = new();
+        await InvokeAsync(() => StateHasChanged());
     }
 }

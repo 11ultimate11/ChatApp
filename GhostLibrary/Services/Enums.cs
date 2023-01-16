@@ -20,7 +20,7 @@
         }
         public enum JobFunction
         {
-            Pflegefachkraft , Pflegeheler , Reinigungskraft , Küchenkraft , Koch
+            Pflegefachkraft , Pflegehelfer , Reinigungskraft , Küchenkraft , Koch
         }
     }
 }

@@ -18,5 +18,7 @@ namespace ChatAppAPI.Helpers
         public DbSet<ChatKeyModel> ChatKeyModels { get; set; }
         public DbSet<ZettelModel> ZettelModels { get; set; }
         public DbSet<NewsModel> NewsModels { get; set; }
+        public DbSet<JobModel> JobModels { get; set; }
+        public DbSet<BewerbungModel> BewerbungModels { get;set; }
     }
 }
