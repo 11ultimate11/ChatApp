@@ -19,7 +19,7 @@
             <input id="zettelTitle" class="settings-zettel-input" type="text" @bind-value="editZettel!.Title" placeholder="Bitte einen Title eingeben" />
             <br />
             <label class="settings-zettel-label" for="zettelcContent">Inhalt</label>
-            <textarea id="zettelcContent" class="settings-zettel-text" @bind="editZettel!.Content" maxlength="200" />
+            <textarea id="zettelcContent" class="settings-zettel-text" @bind="editZettel!.Content" maxlength="400" />
             <button class="settings-zettel-btn" type="submit">Speichern</button>
         </EditForm>
         <button class="settings-zettel-btn2" type="button" @onclick="OnZettelCancel">Abbrechen</button>
@@ -63,7 +63,7 @@
     public ZettelModel? Zettel { get; set; }
     private ZettelModel editZettel = new() { CreatedDate = DateTime.Now };
     private NewsModel newsModel = new() { CreatedDate = DateTime.Now };
-    private string newsUrl = "./Images/000_sonnenschein1.jpg";
+    private string newsUrl = "./Images/november.jpg";
     private void OnZettelCancel()
     {
         SetZettelData();

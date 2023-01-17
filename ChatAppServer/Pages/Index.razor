@@ -17,7 +17,14 @@
 <Sidebar @ref="sidebar" On_tab_change="HandleTabChange"></Sidebar>
 
 <SidebarSecondary @ref="sidebarSecondary" Models="@_chatModels" InovkeOnMainPage="@HandleOnChatPick"></SidebarSecondary>
-@if (_showZettel is not null)
+
+
+@if (!hide_window)
+{
+    <WelcomeComponent Callback="HideWindow"></WelcomeComponent>
+}
+
+@if (_showZettel is not null && hide_window)
 {
     <ZettelComponent Zettel="@_showZettel" HideCallback="HideZettel"></ZettelComponent>
 }
@@ -26,48 +33,55 @@
 {
     <LoginComponent OnLoginCallback="OnLoginCallback"></LoginComponent>
 }
-
-@switch (mainpageState)
+@if (hide_window)
 {
-    case MainpageState.home:
-        <HomeComponent></HomeComponent>
-        <div class="down-arrow">
-            <img src="./Images/downArrow.png" style="width:15px;height:15px;object-fit:cover;" />
-        </div>
-        if (newsModels is not null && newsModels.Any())
-        {
-            foreach (var item in newsModels)
+    switch (mainpageState)
+    {
+        case MainpageState.home:
+            <HomeComponent></HomeComponent>
+            <div class="down-arrow">
+                <img src="./Images/downArrow.png" style="width:15px;height:15px;object-fit:cover;" />
+            </div>
+            if (newsModels is not null && newsModels.Any())
             {
-                <NewsComponent Model="item" ShowButton="news_hide_class" OnNewsChange="OnNewsChange"></NewsComponent>
+                foreach (var item in newsModels)
+                {
+                    <NewsComponent Model="item" ShowButton="news_hide_class" OnNewsChange="OnNewsChange"></NewsComponent>
+                }
             }
-        }
-        break;
-    case MainpageState.covid:
-        <CovidComponent></CovidComponent>
-        break;
-    case MainpageState.Chats:
-        <ChatView @ref="_chatView" Broadcast="@BroadcastMessageAsync"></ChatView>
-        break;
-    case MainpageState.about:
-        <AboutComponent></AboutComponent>
-        break;
-    case MainpageState.mobile:
-        <MobilePflegeComponent></MobilePflegeComponent>
-        break;
-    case MainpageState.antrag:
-        <AntragComponent @ref="antragComponent"></AntragComponent>
-        break;
-    case MainpageState.job:
-        <JobBörseComponent @ref="jobBörseComponent"></JobBörseComponent>
-        break;
-    case MainpageState.team:
-        <TeamComponent></TeamComponent>
-        break;
-    case MainpageState.settings:
-        <SettingsComponent Zettel="@_showZettel" OnZettelChange="OnZettelChange" OnNewsChange="OnNewsChange"></SettingsComponent>
-        break;
+            break;
+        case MainpageState.covid:
+            <CovidComponent></CovidComponent>
+            break;
+        case MainpageState.Chats:
+            <ChatView @ref="_chatView" Broadcast="@BroadcastMessageAsync"></ChatView>
+            break;
+        case MainpageState.about:
+            <AboutComponent></AboutComponent>
+            break;
+        case MainpageState.mobile:
+            <MobilePflegeComponent></MobilePflegeComponent>
+            break;
+        case MainpageState.antrag:
+            <AntragComponent @ref="antragComponent"></AntragComponent>
+            break;
+        case MainpageState.job:
+            <JobBörseComponent @ref="jobBörseComponent"></JobBörseComponent>
+            break;
+        case MainpageState.team:
+            <TeamComponent></TeamComponent>
+            break;
+        case MainpageState.settings:
+            <SettingsComponent Zettel="@_showZettel" OnZettelChange="OnZettelChange" OnNewsChange="OnNewsChange"></SettingsComponent>
+            break;
 
+    }
 }
+
+
+
+
+
 
 @code {
     private HubConnection? hubConnection;
@@ -87,10 +101,17 @@
     private JobBörseComponent? jobBörseComponent;
     private MainpageState mainpageState = MainpageState.home;
     private int _personID;
-    private bool _showLogin = true;
+    private bool _showLogin = false;
     private List<NewsModel> newsModels = new();
     private bool news_hide_class => true;
+    private bool hide_window;
 
+
+    private void HideWindow()
+    {
+        hide_window = true;
+        StateHasChanged();
+    }
     protected async override Task OnAfterRenderAsync(bool firstRender)
     {
         if (!firstRender) return;
@@ -213,7 +234,7 @@
             _imgSrc = @"data:image/jpeg;base64,"+ Convert.ToBase64String(model.Media.Data);
             await JS.InvokeVoidAsync("SetUserData", new string[] { _imgSrc!, $"{model.Nachname} {model.Vorname}" });
             await InvokeAsync(() => StateHasChanged());
-            if(antragComponent is not null && model is not null)
+            if (antragComponent is not null && model is not null)
             {
                 await antragComponent.Reload(model);
             }

@@ -2,6 +2,109 @@
     overflow-y: hidden;
 }
 
+
+
+.welcome-container {
+    height: 100vh;
+    width:100vw;
+    position: fixed;
+    z-index: 1000;
+    padding: 10px;
+}
+
+.welcome-container-box {
+    background-color: white;
+    border-radius: 10px;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 500px;
+    background-color: white;
+    padding: 10px;
+    margin: 10px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px #ccc;
+    z-index: 999;
+    overflow-y: scroll;
+}
+
+@media screen and (max-width:400px){
+    .welcome-container-box h1 {
+        text-align: center;
+        margin-top: 2em;
+        font-size: 20px;
+        font-weight: bold;
+    }
+
+    .welcome-container-box p {
+        margin-left: 10px;
+        font-size: 10px;
+    }
+}
+@media screen and (min-width:401px) and (max-width:700px) {
+    .welcome-container-box h1 {
+        text-align: center;
+        margin-top: 2em;
+        font-size: 20px;
+        font-weight: bold;
+    }
+
+    .welcome-container-box p {
+        margin-left: 10px;
+        font-size: 15px;
+    }
+}
+@media screen and (min-width:701px) {
+    .welcome-container-box h1 {
+        text-align: center;
+        margin-top: 2em;
+        font-size: 20px;
+        font-weight: bold;
+    }
+
+    .welcome-container-box p {
+        margin-left: 10px;
+        font-size: 20px;
+    }
+}
+    .welcome-container-box button {
+        position: absolute;
+        top: .5em;
+        right: .5em;
+        border: none;
+        background-color: white;
+        color: red;
+        font-weight: bold;
+        font-size: 12px;
+    }
+
+        .welcome-container-box button:hover {
+            background-color: red;
+            color: white;
+            border-style: solid;
+            border-radius: 10px;
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 .mainpage-house-logo {
     width: 100%;
     border-radius: 1px 1px 10px 10px;
@@ -113,14 +216,14 @@
     position: fixed;
     z-index: 300;
     background-color: rgba(0,0,0,.7);
-    width: 100%;
-    height: 100%;
+    width: 100vw;
+    height: 100vh;
     top: 0;
     left: 0;
 }
 
 .mainpage-login-popup {
-    position: relative;
+    position: absolute;
     left: 50%;
     top: 50%;
     width: 50%;
@@ -132,7 +235,14 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    overflow: hidden;
+    min-width:250px;
 }
+
+    .mainpage-login-popup img {
+        object-fit: cover;
+        width: 100px;
+    }
 
 .mainpage-login-item {
     margin-top: 10px;
@@ -143,6 +253,7 @@
         border-color: dodgerblue;
         border-width: 1px;
         color: dodgerblue;
+        width: 90%;
     }
 
 .mainpage-login-popup h1 {
@@ -242,6 +353,7 @@
     margin-top: 1em;
     padding: .5em;
     box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+    min-width:250px;
 }
 
 .settings-zettel-media {
@@ -429,10 +541,10 @@
     background-color: white;
     display: flex;
     flex-direction: column;
-    position:absolute;
-    top:50%;
-    left:50%;
-    transform:translate(-50%,20%);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,20%);
     box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
     border-radius: 5px;
     padding: .5em;
@@ -447,33 +559,49 @@
     }
 
     .antrag-container select {
-        margin-top:1em;
-        border-color:dodgerblue;
-        border-color:dodgerblue;
-        color:dodgerblue;
+        margin-top: 1em;
+        border-color: dodgerblue;
+        border-color: dodgerblue;
+        color: dodgerblue;
     }
-    .antrag-container select:active {
-        border-color:dodgerblue;
-    }
+
+        .antrag-container select:active {
+            border-color: dodgerblue;
+        }
+
 .antrag-container-item {
     width: 100%;
     margin-top: .5em;
     border-color: rgba(25,144,255,.5);
     border-width: 1px;
 }
+
 .antrag-container-btn {
     width: 100%;
     margin-top: .5em;
     border-color: dodgerblue;
     border-width: 1px;
-    background-color:dodgerblue;
-    color:white;
+    background-color: dodgerblue;
+    color: white;
 }
+
+
+@media screen and (max-width:400px){
+    .settings-zettel-btn, .settings-zettel-btn3, .settings-zettel-btn4 {
+        font-size: 10px;
+    }
+    .settings-zettel-btn2 {
+        font-size:10px;
+        margin-right:10px;
+    }
+}
+
 @keyframes newsAnimation {
     from {
-        opacity:0;
+        opacity: 0;
     }
+
     to {
-        opacity:1;
+        opacity: 1;
     }
 }

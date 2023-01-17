@@ -14,6 +14,6 @@ public class ZettelModel : AbstractSqlModel
     [StringLength(30, MinimumLength = 2, ErrorMessage = "{0} is not valid.")]
     public string? Title { get; set; }
     [Required(ErrorMessage = "Please enter {0}.")]
-    [StringLength(200, MinimumLength = 5, ErrorMessage = "{0} is not valid.")]
+    [StringLength(500, MinimumLength = 5, ErrorMessage = "{0} is not valid.")]
     public string? Content { get; set; }
 }

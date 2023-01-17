@@ -1,0 +1,52 @@
+﻿
+
+
+
+
+
+
+<div class="welcome-container-box welcome-container-box">
+    <button @onclick="HideWindow">Schließen</button>
+    <h1>Hallo und willkommen</h1>
+    <p>
+        Ich freue mich über Ihren Besuch auf dieser Website und hoffe, sie gefällt Ihnen.
+    </p>
+    <p>
+        Es ist möglich, dass sich diese Website zum Zeitpunkt Ihres Besuchs noch im Aufbau befindet.
+        <br />
+        Bitte um Verständnis
+    </p>
+    <p>
+        Um diese Website in vollem Umfang zu erkunden, können Sie die Login-Funktion nutzen, die Schaltfläche in der oberen rechten Ecke.
+        <ul>
+            <li><strong>Benutzername : </strong> tester</li>
+            <li><strong>Kennwort : </strong> tester</li>
+        </ul>
+    </p>
+    <p>
+        Da ich fast eine Dekade als Krankenpfleger gearbeitet habe , habe ich diese Thema ausgesucht.
+        <br /><strong>Viel Spaß !!!</strong>
+    </p>
+    <p>
+        Dies ist ein Demo-Web-App-Produkt, für das die folgenden Technologien verwendet wurden:
+        <ul>
+            <li><strong>Frontend</strong> : HMTL CSS</li>
+            <li><strong>Backend</strong> : C# JavaScript</li>
+            <li><strong>Frameworks</strong> : .ASP Blazor / .ASP Api / SignalR</li>
+        </ul>
+    </p>
+</div>
+
+
+
+
+
+
+@code {
+    [Parameter]
+    public EventCallback Callback { get; set; }
+    private async void HideWindow()
+    {
+        await Callback.InvokeAsync();
+    }
+}

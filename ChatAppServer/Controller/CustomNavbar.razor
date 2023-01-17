@@ -1,47 +1,50 @@
 ﻿@using static ChatAppServer.Services.Enums;
 @inject IJSRuntime JS;
-<nav id="primaryNavbar">
-    <div class="navbar-left">
-        <img src="./Images/sun.jpg" alt="" class=" navbar-left-sm navbar-left-md navbar-left-lg">
-        <p class="navbar-logo-name-sm navbar-logo-name-md navbar-logo-name-lg navbar-left-logo-hidde " style="margin-top:15px">
-            Pflegecentrum Sonnenschein
-        </p>
-    </div>
-    <div id="navbar-items" class="navbar-middle navbar-middle-hidde">
-        <div id="navTeam" @onclick="OnTeamClick" class="navbar-item-sm navbar-item-md navbar-item-lg">
-            Team
+<nav>
+    <div class="navbar-container" id="primaryNavbar">
+        <div class="navbar-left">
+            <img src="./Images/sun.jpg" alt="" class=" navbar-left-sm navbar-left-md navbar-left-lg">
+            <p class="navbar-logo-name-sm navbar-logo-name-md navbar-logo-name-lg navbar-left-logo-hidde " style="margin-top:15px">
+                Pflegecentrum
+            </p>
         </div>
-        <div id="navHaus" class="navbar-item-sm navbar-item-md navbar-item-lg">
-            Häuser
+        <div id="navbar-items" class="navbar-middle navbar-middle-hidde">
+            <div id="navTeam" @onclick="OnTeamClick" class="navbar-item-sm navbar-item-md navbar-item-lg">
+                Team
+            </div>
+            <div id="navHaus" class="navbar-item-sm navbar-item-md navbar-item-lg">
+                Häuser
+            </div>
+            <div id="navMobile" @onclick="OnMobileClick" class="navbar-item-sm navbar-item-md navbar-item-lg">
+                Mobile Pflege
+            </div>
+            <div id="navAbout" @onclick="OnAboutClick" class="navbar-item-sm navbar-item-md navbar-item-lg">
+                Über uns
+            </div>
+            <div id="navEinloggen" class="navbar-item-sm navbar-item-md navbar-item-lg" @onclick="OnLoginClick">
+                @einloggen_text
+            </div>
         </div>
-        <div id="navMobile" @onclick="OnMobileClick" class="navbar-item-sm navbar-item-md navbar-item-lg">
-            Mobile Pflege
-        </div>
-        <div id="navAbout" @onclick="OnAboutClick" class="navbar-item-sm navbar-item-md navbar-item-lg">
-            Über uns
-        </div>
-        <div id="navEinloggen" class="navbar-item-sm navbar-item-md navbar-item-lg" @onclick="OnLoginClick">
-            @einloggen_text
-        </div>
-    </div>
-    <div class="navbar-user">
+        <div class="navbar-user">
 
-        <div class="navbar-user-separator navbar-user-separator-hide"></div>
-        <p id="navbar-user-name-text" class="navbar-username-sm navbar-username-md navbar-username-lg" style="margin-top:15px">
-            no user
-        </p>
-        <img id="navbar-user-avatar-img" class="navbar-user-avatar-sm navbar-user-avatar-md navbar-user-avatar-lg" src="" alt="">
-    </div>
-    @*<div id="navbar-burger" class="navbar-right-hidde-sm navbar-right-hidde-md navbar-right-hidde-lg navbar-right-hidde">
-        <button onclick="@OnHamburgerClick" style="border-width:0px;">
-                <img src="./Images/burger.png" alt="" style="width: 30px; height: 30px;">
-        </button>
-    </div>*@
-    @*<div class="navbar-drop-down-container navbar-hide" style="background-color:pink; height:50px;">
-        <div class="navbar-drop-down-menu">
-            salam
+            <div class="navbar-user-separator navbar-user-separator-hide"></div>
+            <p id="navbar-user-name-text" class="navbar-username-sm navbar-username-md navbar-username-lg" style="margin-top:15px">
+                no user
+            </p>
+            <img id="navbar-user-avatar-img" class="navbar-user-avatar-sm navbar-user-avatar-md navbar-user-avatar-lg" src="" alt="">
         </div>
-    </div>*@
+        <div @onclick="OnHamburgerClick" class="navbar-hamburger">
+            <img src="./Images/burger.jpeg"/>
+        </div>
+    </div>
+
+    <div class="@dropDown">
+        <button @onclick="OnTeamClick">Team</button>
+        <button>Häuser</button>
+        <button @onclick="OnMobileClick">Mobile Pflege</button>
+        <button @onclick="OnAboutClick">Über uns</button>
+        <button @onclick="OnLoginClick">@einloggen_text</button>
+    </div>
 </nav>
 @code {
     private string einloggen_text = "Einloggen";
@@ -49,27 +52,37 @@
     public EventCallback<MainpageState> Callback { get; set; }
     [Parameter]
     public EventCallback<bool> OnLoginToggle { get; set; }
-    private async void OnHamburgerClick()
+    private string showDropDown = "navbar-hidebar-show";
+    private string hideDropDown = "navbar-hidebar";
+    private string dropDown = "navbar-hidebar";
+    private bool dropDownVisibility = false;
+    private void OnHamburgerClick()
     {
-        await JS.InvokeVoidAsync("OnHamburgerClick");
+        //await JS.InvokeVoidAsync("OnHamburgerClick");
+        dropDownVisibility = !dropDownVisibility;
+        dropDown = dropDownVisibility ? showDropDown : hideDropDown;
+        StateHasChanged();
     }
     private async Task OnAboutClick()
     {
         await Callback.InvokeAsync(MainpageState.about);
         var param = new string[] { "navAbout", "primaryNavbar" };
         await JS.InvokeVoidAsync("OnNavigationTab", param);
+        CloseDropDown();
     }
     private async Task OnMobileClick()
     {
         await Callback.InvokeAsync(MainpageState.mobile);
         var param = new string[] { "navMobile", "primaryNavbar" };
         await JS.InvokeVoidAsync("OnNavigationTab", param);
+        CloseDropDown();
     }
     private async Task OnTeamClick()
     {
         await Callback.InvokeAsync(MainpageState.team);
         var param = new string[] { "navTeam", "primaryNavbar" };
         await JS.InvokeVoidAsync("OnNavigationTab", param);
+        CloseDropDown();
     }
     private async Task OnLoginClick()
     {
@@ -83,6 +96,7 @@
             einloggen_text = "Einloggen";
             await InvokeAsync(() => StateHasChanged());
         }
+        CloseDropDown();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -91,7 +105,7 @@
         {
             if (einloggen_text.Equals("Einloggen"))
             {
-                
+
             }
         }
     }
@@ -99,5 +113,9 @@
     {
         einloggen_text = result ? "Ausloggen" : "Einloggen";
         await InvokeAsync(() => StateHasChanged());
+    }
+    private void CloseDropDown()
+    {
+        OnHamburgerClick();
     }
 }
