@@ -109,6 +109,7 @@ person-card-grid a:active , a:visited , a:link {
         width: 100%;
         height: auto;
         object-fit: cover;
+        max-height:300px;
     }
 }
 
@@ -129,6 +130,7 @@ person-card-grid a:active , a:visited , a:link {
         width: 100%;
         height: auto;
         object-fit: cover;
+        max-height: 400px;
     }
 }
 

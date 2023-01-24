@@ -20,6 +20,7 @@
     left: 50%;
     transform: translate(-50%, -50%);
     width: 90%;
+    height:65vh;
     max-width: 500px;
     background-color: white;
     padding: 10px;
@@ -364,6 +365,8 @@
     color: white;
     border-radius: 4px;
     opacity: .75;
+    max-width:90%;
+    font-size:15px;
 }
 
 .settings-zettel-input {
@@ -593,6 +596,17 @@
     .settings-zettel-btn2 {
         font-size:10px;
         margin-right:10px;
+    }
+    .settings-zettel-media {
+        position: absolute;
+        bottom: .5em;
+        right: .5em;
+        background-color: black;
+        color: white;
+        border-radius: 4px;
+        opacity: .75;
+        max-width: 90%;
+        font-size: 10px;
     }
 }
 

@@ -23,10 +23,10 @@
         <img class="sidebar-item-img sidebar-item-img-sm" src="./Images/job.png" />
         <p>Jobs</p>
     </button>
-    <butto @onclick="OnImpressumClick" class="sidebar-item-sm sidebar-item sidebar-button sidebar-button-sm">
+    <button id="sbImpressum" @onclick="OnImpressumClick" class="sidebar-item-sm sidebar-item sidebar-button sidebar-button-sm">
         <img class="sidebar-item-img sidebar-item-img-sm" src="./Images/impressum.png" />
         <p>Impressum</p>
-    </butto>
+    </button>
     <button id="sbCovid" @onclick="OnCovidClick" class="sidebar-item-sm sidebar-item sidebar-button sidebar-button-sm">
         <img class="sidebar-item-img sidebar-item-img-sm" src="./Images/cropped-corona-icon.png" />
         <p>Covid</p>
@@ -120,7 +120,10 @@
     }
     private async Task OnImpressumClick()
     {
-        //TODO - impressum popup
+        mainpageState = MainpageState.impressum;
+        await On_tab_change.InvokeAsync(mainpageState);
+        var param = new string[] { "sbImpressum", "secondaryNavbar" };
+        await JS.InvokeVoidAsync("OnNavigationTab", param);
     }
     public async Task HideShowMenu(bool value , PersonModel model)
     {

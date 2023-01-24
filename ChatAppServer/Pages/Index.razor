@@ -71,6 +71,12 @@
         case MainpageState.team:
             <TeamComponent></TeamComponent>
             break;
+        case MainpageState.complain:
+            <ChatAppServer.Controller.Chat.ComplainComponent></ChatAppServer.Controller.Chat.ComplainComponent>
+            break;
+        case MainpageState.impressum:
+            <ImpressumComponent></ImpressumComponent>
+            break;
         case MainpageState.settings:
             <SettingsComponent Zettel="@_showZettel" OnZettelChange="OnZettelChange" OnNewsChange="OnNewsChange"></SettingsComponent>
             break;
@@ -86,7 +92,7 @@
 @code {
     private HubConnection? hubConnection;
     private HubConnectionState hubConnectionState => hubConnection is null ? HubConnectionState.Disconnected : hubConnection.State;
-    private string _url = "https://testsignalrchat12311.azurewebsites.net/chatHub";
+    private string _url = "https://arbeitsprobeflorinbadescu.azurewebsites.net/chatHub";
     private string? _token;
     private string? _imgSrc;
     private ZettelModel? _showZettel;
@@ -136,7 +142,6 @@
                     await JS.InvokeVoidAsync("SetUserData", new string[] { _imgSrc!, $"{person.Nachname} {person.Vorname}" });
 
                     Debug.WriteLine($"Person {person.Vorname}");
-                    //await GetChats();
                     await InvokeAsync(() => StateHasChanged());
                 }
             }
@@ -229,11 +234,12 @@
     {
         if (model is not null)
         {
-            await RegisterToBroadcast();
-            await GetChats();
             _imgSrc = @"data:image/jpeg;base64,"+ Convert.ToBase64String(model.Media.Data);
             await JS.InvokeVoidAsync("SetUserData", new string[] { _imgSrc!, $"{model.Nachname} {model.Vorname}" });
+            _token = await TokenIO.ReadToken("token", JS);
             await InvokeAsync(() => StateHasChanged());
+            await RegisterToBroadcast();
+            await GetChats();
             if (antragComponent is not null && model is not null)
             {
                 await antragComponent.Reload(model);

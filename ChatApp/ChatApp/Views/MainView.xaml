@@ -36,7 +36,8 @@
                                   extensions:TouchEffect.Command="{Binding Source={x:RelativeSource AncestorType={x:Type viewmodels:MainVM}},Path=SelectCommand}"
                                   extensions:TouchEffect.CommandParameter="{Binding .}">
                                 <Image Source="{Binding Target.Avatar}" HeightRequest="40"
-                                       extensions:CornerRadiusEffect.CornerRadius="30"/>
+                                       extensions:CornerRadiusEffect.CornerRadius="30"
+                                       Aspect="AspectFill"/>
                                 <Label VerticalTextAlignment="Center" Grid.Column="1" MaxLines="2"
                                        FontAttributes="Bold">
                                     <Label.FormattedText>

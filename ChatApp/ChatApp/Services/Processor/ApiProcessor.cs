@@ -13,7 +13,7 @@ namespace ChatApp.Services.Processor
 {
     public class ApiProcessor : IApiProcessor
     {
-        const string _baseUrlAdress = "https://chatappapiflorin.azurewebsites.net/api/";
+        const string _baseUrlAdress = "https://ghostappapiflorin.azurewebsites.net/api/";
         public ApiProcessor()
         {
             
