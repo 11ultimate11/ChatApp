@@ -1,0 +1,21 @@
+﻿
+@if (_person is not null)
+{
+    <ViewAntragComponent></ViewAntragComponent>
+}
+else
+{
+    <WriteAntragComponent></WriteAntragComponent>
+}
+
+
+
+
+@code {
+    private PersonModel? _person;
+    public async Task Reload(PersonModel model)
+    {
+        _person = model;
+        await InvokeAsync(() => StateHasChanged());
+    }
+}

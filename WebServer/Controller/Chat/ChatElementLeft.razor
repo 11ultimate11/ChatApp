@@ -1,0 +1,12 @@
+﻿
+<div class="chat-element-left">
+    <div class="chat-box-left-fill">
+        <p class="chat-msj-left-sm chat-msj-left ">@Message?.Content</p>
+        <p class="chat-msj-left-date-sm chat-msj-left-date">@Message?.CreatedDate</p>
+    </div>
+    <div class="chat-box-empthy"> </div>
+</div>
+@code {
+    [Parameter]
+    public ChatMessageModel? Message { get; set; }
+}

@@ -1,0 +1,298 @@
+﻿@page "/"
+@inject IJSRuntime JS;
+@inject IApiProcessor _api;
+@using WebServer.Controller.Chat
+@using WebServer.Services;
+@using GhostLibrary.Models;
+@using GhostLibrary.Services.Interfaces;
+@using Microsoft.AspNetCore.SignalR.Client;
+@using Newtonsoft.Json;
+@using System.Diagnostics;
+@using System.Text.Json.Nodes;
+@using static WebServer.Services.Enums;
+
+<CustomNavbar @ref="customNavbar" Callback="@HandleTabChange" OnLoginToggle="@OnLoginToggle"></CustomNavbar>
+
+<Sidebar @ref="sidebar" On_tab_change="HandleTabChange"></Sidebar>
+
+<SidebarSecondary @ref="sidebarSecondary" Models="@_chatModels" InovkeOnMainPage="@HandleOnChatPick"></SidebarSecondary>
+
+
+@if (!hide_window)
+{
+    <WelcomeComponent Callback="HideWindow"></WelcomeComponent>
+}
+
+@if (_showZettel is not null && hide_window)
+{
+    <ZettelComponent Zettel="@_showZettel" HideCallback="HideZettel"></ZettelComponent>
+}
+
+@if (_showLogin)
+{
+    <LoginComponent OnLoginCallback="OnLoginCallback"></LoginComponent>
+}
+@if (hide_window)
+{
+    switch (mainpageState)
+    {
+        case MainpageState.home:
+            <HomeComponent></HomeComponent>
+            <div class="down-arrow">
+                <img src="./Images/downArrow.png" style="width:15px;height:15px;object-fit:cover;" />
+            </div>
+            if (newsModels is not null && newsModels.Any())
+            {
+                foreach (var item in newsModels)
+                {
+                    <NewsComponent Model="item" ShowButton="news_hide_class" OnNewsChange="OnNewsChange"></NewsComponent>
+                }
+            }
+            break;
+        case MainpageState.covid:
+            <CovidComponent></CovidComponent>
+            break;
+        case MainpageState.Chats:
+            <ChatView @ref="_chatView" Broadcast="@BroadcastMessageAsync"></ChatView>
+            break;
+        case MainpageState.about:
+            <AboutComponent></AboutComponent>
+            break;
+        case MainpageState.mobile:
+            <MobilePflegeComponent></MobilePflegeComponent>
+            break;
+        case MainpageState.antrag:
+            <AntragComponent @ref="antragComponent"></AntragComponent>
+            break;
+        case MainpageState.job:
+            <JobBörseComponent @ref="jobBörseComponent"></JobBörseComponent>
+            break;
+        case MainpageState.team:
+            <TeamComponent></TeamComponent>
+            break;
+        case MainpageState.complain:
+            <ComplainComponent></ComplainComponent>
+            break;
+        case MainpageState.impressum:
+            <ImpressumComponent></ImpressumComponent>
+            break;
+        case MainpageState.settings:
+            <SettingsComponent Zettel="@_showZettel" OnZettelChange="OnZettelChange" OnNewsChange="OnNewsChange"></SettingsComponent>
+            break;
+
+    }
+}
+
+
+
+
+
+
+@code {
+    private HubConnection? hubConnection;
+    private HubConnectionState hubConnectionState => hubConnection is null ? HubConnectionState.Disconnected : hubConnection.State;
+    private string _url = "https://arbeitsprobeflorinbadescu.azurewebsites.net/chatHub";
+    private string? _token;
+    private string? _imgSrc;
+    private ZettelModel? _showZettel;
+    private PersonModel? model;
+    private ChatModel? _selectedChat;
+    private List<ChatModel>? _chatModels = new();
+    private ChatView _chatView;
+    private CustomNavbar customNavbar;
+    private Sidebar sidebar;
+    private SidebarSecondary? sidebarSecondary;
+    private AntragComponent? antragComponent;
+    private JobBörseComponent? jobBörseComponent;
+    private MainpageState mainpageState = MainpageState.home;
+    private int _personID;
+    private bool _showLogin = false;
+    private List<NewsModel> newsModels = new();
+    private bool news_hide_class => true;
+    private bool hide_window;
+
+
+    private void HideWindow()
+    {
+        hide_window = true;
+        StateHasChanged();
+    }
+    protected async override Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+        var tasks = new List<Task>();
+        tasks.Add(Task.Run(GetZettelAsync));
+        tasks.Add(Task.Run(GetAllNews));
+        await Task.WhenAll(tasks);
+        _token = await TokenIO.ReadToken("token", JS);
+        if (!string.IsNullOrEmpty(_token))
+        {
+            var json = await _api.GetStringAsync($"Account/LogInWithToken/{_token}", _token);
+            if (!string.IsNullOrEmpty(json))
+            {
+                var node = JsonObject.Parse(json);
+                var person = JsonConvert.DeserializeObject<PersonModel>(node["person"].ToString());
+                if (person is not null)
+                {
+                    model = person;
+                    _personID = model.ID;
+                    //await RegisterToBroadcast();
+                    _imgSrc = @"data:image/jpeg;base64,"+ Convert.ToBase64String(person.Media.Data);
+                    await JS.InvokeVoidAsync("SetUserData", new string[] { _imgSrc!, $"{person.Nachname} {person.Vorname}" });
+
+                    Debug.WriteLine($"Person {person.Vorname}");
+                    await InvokeAsync(() => StateHasChanged());
+                }
+            }
+            else
+            {
+                await SetNullData();
+            }
+            Debug.WriteLine(json);
+        }
+        else
+        {
+            await SetNullData();
+        }
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        await InitHubConnection();
+    }
+    private async Task GetChats()
+    {
+        var result = await _api.GetStringAsync("Chat/Getchats/0", _token!);
+        if (!string.IsNullOrEmpty(result))
+        {
+            var chats = JsonConvert.DeserializeObject<List<ChatModel>>(result);
+            if (chats is not null && chats.Any())
+            {
+                _chatModels.Add(chats.FirstOrDefault());
+                //sidebar?.AddToList(chats);
+            }
+        }
+    }
+    private async Task GetZettelAsync()
+    {
+        var result = await _api.GetStringAsync("Extra", string.Empty);
+        if (!string.IsNullOrEmpty(result))
+        {
+            _showZettel = JsonConvert.DeserializeObject<ZettelModel>(result);
+            if (_showZettel is not null)
+            {
+                //await InvokeAsync(() => StateHasChanged());
+            }
+        }
+    }
+    private async Task HideZettel()
+    {
+        _showZettel = null;
+        await InvokeAsync(() => StateHasChanged());
+    }
+    private async void HandleTabChange(MainpageState state)
+    {
+        mainpageState = state;
+        await InvokeAsync(() => StateHasChanged());
+    }
+    private async Task HandleOnChatPick(ChatModel model)
+    {
+        if (mainpageState != MainpageState.Chats)
+        {
+            mainpageState = MainpageState.Chats;
+            await InvokeAsync(() => StateHasChanged());
+        }
+        _chatView?.ChangeSelectedChat(model);
+    }
+    private async Task InitHubConnection()
+    {
+        if (hubConnection is null)
+        {
+            hubConnection = new HubConnectionBuilder().WithUrl(_url).Build();
+            await hubConnection.StartAsync();
+            Debug.WriteLine($"Hubconnectionstate {hubConnection.State}");
+            hubConnection.On<string>("Broadcast", json => _chatView?.OnMessageIncome(json));
+            hubConnection.On<string>("Debug", content => Debug.WriteLine(content));
+
+        }
+    }
+    public async Task RegisterToBroadcast()
+    {
+        while (hubConnection is null || hubConnection.State != HubConnectionState.Connected)
+        {
+            await Task.Delay(10);
+        }
+        await hubConnection.InvokeAsync("Register", $"Person{_personID}");
+        //App.Instance.DisplayToast("Registered to broadcast");
+    }
+    public async Task BroadcastMessageAsync(string[] data)
+    {
+        if (hubConnection is not null && hubConnection.State == HubConnectionState.Connected)
+            await hubConnection.InvokeAsync("BroadcastMessage", data.FirstOrDefault(), data.LastOrDefault());
+    }
+    private async Task OnLoginCallback(PersonModel model)
+    {
+        if (model is not null)
+        {
+            _imgSrc = @"data:image/jpeg;base64,"+ Convert.ToBase64String(model.Media.Data);
+            await JS.InvokeVoidAsync("SetUserData", new string[] { _imgSrc!, $"{model.Nachname} {model.Vorname}" });
+            _token = await TokenIO.ReadToken("token", JS);
+            await InvokeAsync(() => StateHasChanged());
+            await RegisterToBroadcast();
+            await GetChats();
+            if (antragComponent is not null && model is not null)
+            {
+                await antragComponent.Reload(model);
+            }
+        }
+        await customNavbar?.OnLogin(model is not null);
+
+        await sidebar.HideShowMenu(model is not null, model!);
+        _showLogin = false;
+    }
+    private async Task OnLoginToggle(bool value)
+    {
+        _showLogin = value;
+        if (!value)
+        {
+            await SetNullData();
+            await sidebar.HideShowMenu(value, model!);
+        }
+        //TODO delete person references and tokens
+        await InvokeAsync(() => StateHasChanged());
+    }
+    private async Task SetNullData()
+    {
+        _imgSrc = "./Images/profile.png";
+        await JS.InvokeVoidAsync("SetUserData", new string[] { _imgSrc!, "Besucher" });
+    }
+    private async Task OnZettelChange(ZettelModel model)
+    {
+        _showZettel = model;
+        await InvokeAsync(() => StateHasChanged());
+    }
+    private async Task OnNewsChange(object[] objs)
+    {
+        if ((bool)objs.LastOrDefault()!)
+        {
+            newsModels.Add((NewsModel)objs.FirstOrDefault()!);
+        }
+        else
+        {
+            newsModels.Remove((NewsModel)objs.FirstOrDefault()!);
+        }
+        await InvokeAsync(() => StateHasChanged());
+    }
+    private async Task GetAllNews()
+    {
+        var result = await _api.GetStringAsync("Extra/GetAllNews", string.Empty);
+        if (!string.IsNullOrEmpty(result))
+        {
+            var models = JsonConvert.DeserializeObject<List<NewsModel>>(result);
+            if (models is not null && models.Any())
+            {
+                newsModels = models;
+                //await InvokeAsync(() => StateHasChanged());
+            }
+        }
+    }
+}

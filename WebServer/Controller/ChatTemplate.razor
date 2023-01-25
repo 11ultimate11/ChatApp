@@ -1,0 +1,69 @@
+﻿
+@using GhostLibrary.Models;
+@using GhostLibrary.Services.Interfaces;
+@using System.Diagnostics;
+@inject IApiProcessor _api;
+
+
+
+<div class="container div">
+    <div class="row">
+        <div class="col-md-2 col-sm-1 col-3">
+            <img src="@_path" class="rounded-circle" style="object-fit:cover ; height:auto; width:100%;"/>
+        </div>
+        <div class="col-md-10 col-sm-11 col-9 ">
+            <div class="row">
+                <p class="h1">@person?.Nachname @person?.Vorname</p>
+            </div>
+            <div class="row">
+                <p class="h5">@Model?.LastMessage</p>
+            </div>
+            <div class="row">
+                <i class="h6">@Model?.CreatedDate</i>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+    .div:hover{
+        background-color:dodgerblue;
+        border-radius:20px;
+        transform:scale(1.1);
+        cursor:grab;
+        transition:all 0.14s ease-in-out
+    }
+</style>
+
+@code {
+    private ChatModel? _model;
+    [Parameter]
+    public ChatModel? Model
+    {
+        get => _model;
+        set
+        {
+            _model = value;
+            Debug.WriteLine(Model?.LastMessage);
+        }
+    }
+    private string _path => person is null ? string.Empty : (person.Media?.Data != null ? Helper.GetImgFromBytes(person.Media.Data) : string.Empty);
+    [Parameter]
+    public string? Token { get; set; }
+    [Parameter]
+    public int ID { get; set; }
+    private PersonModel? person;
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await Helper.DownloadPerson(GetFremdID(), _api, Token);
+        if (result is not null)
+        {
+            person = result;
+            await InvokeAsync(() => StateHasChanged());
+        }
+    }
+    private int GetFremdID()
+    {
+        if (Model is null) return 0;
+        else return ID == Model.OwnerID ? ID : Model.TargetID;
+    }
+}

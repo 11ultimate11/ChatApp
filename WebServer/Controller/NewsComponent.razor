@@ -1,0 +1,62 @@
+﻿
+@using GhostLibrary.Services.Interfaces;
+@inject IJSRuntime JS;
+@inject IApiProcessor _api;
+
+
+<div class="news-container">
+    <img src="@uri" />
+    <div class="news-mask">
+    </div>
+    <h2 >@Model?.Title</h2>
+    <p>@Model?.Content</p>
+    <button class="@hide_class" @onclick="DeleteAsync">x</button>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+@code {
+    [Parameter]
+    public NewsModel? Model { get; set; }
+    [Parameter]
+    public bool ShowButton { get; set; }
+
+    [Parameter]
+    public EventCallback<object[]> OnNewsChange { get; set; }
+    private string hide_class => !ShowButton ? "news-container-hide-close" : string.Empty;
+    private string? uri;
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            if (Model is null) return;
+            uri = Helper.GetImgFromBytes(Model?.Media?.Data);
+            await InvokeAsync(() => StateHasChanged());
+        }
+    }
+    private async Task DeleteAsync()
+    {
+        var token = await TokenIO.ReadToken("token", JS);
+        var result = await _api.DeleteAsync(Model.ID, "Extra/DeleteNews", token);
+        if (result)
+        {
+            await JS.InvokeVoidAsync("DisplayAlert", "News wurde erfolgreich gelöscht.");
+            object[] param = { Model, false };
+            await OnNewsChange.InvokeAsync(param);
+        }
+        else
+        {
+            await JS.InvokeVoidAsync("DisplayAlert", "An error occured please try again later");
+        }
+    }
+}

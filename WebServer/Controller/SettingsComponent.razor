@@ -1,0 +1,170 @@
+﻿
+@using GhostLibrary.Services.Interfaces;
+@using Newtonsoft.Json;
+@inject IApiProcessor _api;
+@inject IJSRuntime JS;
+
+
+
+
+
+
+<section>
+    <div class="settings-zettel-container">
+        <h3 class="settings-zettel-header">Zettel</h3>
+        <EditForm Model="editZettel" OnValidSubmit="OnZettelValidSubmit">
+            <DataAnnotationsValidator></DataAnnotationsValidator>
+            <ValidationSummary></ValidationSummary>
+            <label class="settings-zettel-label" for="zettelTitle">Title</label>
+            <input id="zettelTitle" class="settings-zettel-input" type="text" @bind-value="editZettel!.Title" placeholder="Bitte einen Title eingeben" />
+            <br />
+            <label class="settings-zettel-label" for="zettelcContent">Inhalt</label>
+            <textarea id="zettelcContent" class="settings-zettel-text" @bind="editZettel!.Content" maxlength="400" />
+            <button class="settings-zettel-btn" type="submit">Speichern</button>
+        </EditForm>
+        <button class="settings-zettel-btn2" type="button" @onclick="OnZettelCancel">Abbrechen</button>
+        <button class="settings-zettel-btn3" type="button" @onclick="DeleteZettel">Löschen</button>
+    </div>
+</section>
+
+<hr />
+
+<section>
+    <div class="settings-zettel-container">
+        <h3 class="settings-zettel-header">News</h3>
+        <EditForm Model="newsModel" OnValidSubmit="OnNewsSubmit">
+            <DataAnnotationsValidator></DataAnnotationsValidator>
+            <ValidationSummary></ValidationSummary>
+            <div style="position:relative;">
+                <img class="settings-zettel-img" src="@newsUrl" style="object-fit:cover;" />
+                <InputFile  class="settings-zettel-media" OnChange="OnNewsDataPick" accept=".jpg,.png" >
+                </InputFile>
+            </div>
+
+            <label class="settings-zettel-label" for="zettelTitle">Title</label>
+            <input id="zettelTitle" class="settings-zettel-input" type="text" @bind-value="newsModel!.Title" placeholder="Bitte einen Title eingeben" />
+            <br />
+            <label class="settings-zettel-label" for="zettelcContent">Inhalt</label>
+            <textarea id="zettelcContent" class="settings-zettel-text" @bind="newsModel!.Content" maxlength="1000" />
+
+            <button class="settings-zettel-btn" type="submit">Speichern</button>
+        </EditForm>
+        <button class="settings-zettel-btn4" type="button" @onclick="OnZettelCancel">Abbrechen</button>
+         </div>
+</section>
+
+
+@code {
+    [Parameter]
+    public EventCallback<ZettelModel> OnZettelChange { get; set; }
+    [Parameter]
+    public EventCallback<object[]> OnNewsChange { get; set; }
+    [Parameter]
+    public ZettelModel? Zettel { get; set; }
+    private ZettelModel editZettel = new() { CreatedDate = DateTime.Now };
+    private NewsModel newsModel = new() { CreatedDate = DateTime.Now };
+    private string newsUrl = "./Images/november.jpg";
+    private void OnZettelCancel()
+    {
+        SetZettelData();
+        StateHasChanged();
+    }
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        SetZettelData();
+    }
+    private async void OnZettelValidSubmit()
+    {
+        if (Zettel is not null)
+        {
+            Zettel.Title = editZettel.Title;
+            Zettel.Content = editZettel.Content;
+        }
+        var token = await TokenIO.ReadToken("token", JS);
+        var result = await _api.PutAsync(editZettel, "Extra/UpdateZettel", token);
+        if (Zettel is null)
+        {
+            Zettel = new() { Title = editZettel.Title, Content = editZettel.Content };
+
+            await JS.InvokeVoidAsync("DisplayAlert", "Zettel wurde erstellt");
+        }
+        else
+        {
+
+            await JS.InvokeVoidAsync("DisplayAlert", "Zettel wurde aktualiesiert");
+        }
+        StateHasChanged();
+        await OnZettelChange.InvokeAsync(Zettel);
+
+    }
+    private async Task DeleteZettel()
+    {
+        Zettel = null;
+        editZettel = new();
+        var token = await TokenIO.ReadToken("token", JS);
+        _ = await _api.DeleteAsync(0, "Extra/DeleteZettel", token);
+        await InvokeAsync(() => StateHasChanged());
+        await OnZettelChange.InvokeAsync(null);
+        await JS.InvokeVoidAsync("DisplayAlert", "Zettel wurde gelöst");
+    }
+    void SetZettelData()
+    {
+
+        if (Zettel is not null)
+        {
+            editZettel.Title = Zettel.Title;
+            editZettel.Content = Zettel.Content;
+        }
+        else
+        {
+            Task.Run(CheckForZettel);
+        }
+    }
+    async Task OnNewsDataPick(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+        if(file is not null)
+        {
+            using MemoryStream ms = new();
+            await file.OpenReadStream().CopyToAsync(ms);
+            var data = ms.ToArray();
+            if(data.Length > 0)
+            {
+                newsUrl = $"data:image/png;base64,{Convert.ToBase64String(data)}";
+                newsModel.Media = new MediaModel() { Data = data, Key = $"{Guid.NewGuid().ToString()}.jpg" };
+                await InvokeAsync(() => StateHasChanged());
+            }
+        }
+    }
+    private async Task OnNewsSubmit()
+    {
+        var token = await TokenIO.ReadToken("token", JS);
+        var result = await _api.PostAsync(newsModel, "Extra/AddNews",token);
+        if (result)
+        {
+
+            await JS.InvokeVoidAsync("DisplayAlert", "News wurde hinzugefügt");
+            object[] obj = { newsModel, true };
+            await OnNewsChange.InvokeAsync(obj);
+            newsModel = new() { CreatedDate = DateTime.Now };
+            await InvokeAsync(() => StateHasChanged());
+        }
+        else
+        {
+            await JS.InvokeVoidAsync("DisplayAlert", "An error occured please try again later");
+        }
+    }
+    private async Task CheckForZettel()
+    {
+        var result = await _api.GetStringAsync("Extra", string.Empty);
+        if (!string.IsNullOrEmpty(result))
+        {
+            editZettel = JsonConvert.DeserializeObject<ZettelModel>(result);
+            if (editZettel is not null)
+            {
+                await InvokeAsync(() => StateHasChanged());
+            }
+        }
+    }
+}

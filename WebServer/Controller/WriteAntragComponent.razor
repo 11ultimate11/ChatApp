@@ -1,0 +1,39 @@
+﻿
+@inject IJSRuntime _js;
+
+<div class="antrag-container">
+    <img src="./Images/cerere.jpg"/>
+    <select>
+        <option>Pflegeplatz stationär</option>
+        <option>Mobilepflege</option>
+        <option>Kurzzeitpflege</option>
+        <option>Termin vereinbaren</option>
+    </select>
+    <EditForm Model="antragModel" OnValidSubmit="OnValidSubmit">
+        <DataAnnotationsValidator></DataAnnotationsValidator>
+        <ValidationSummary></ValidationSummary>
+        <input class="antrag-container-item" @bind-value="antragModel.Name" placeholder="Name eingeben" />
+        <br />
+        <input class="antrag-container-item" @bind-value="antragModel.Email" placeholder="Email eingeben" />
+        <br />
+        <input class="antrag-container-item" type="number" @bind-value="antragModel.Telefon" placeholder="Telefon eingeben" />
+        <br />
+        <textarea maxlength="500" class="antrag-container-item" @bind="antragModel.Content" placeholder="Ihre Frage in ihre eigene Wörter"></textarea>
+        <button class="antrag-container-btn" type="submit">Absenden</button>
+    </EditForm>
+</div>
+
+
+
+
+
+
+@code {
+    private AntragModel antragModel = new();
+    private async void OnValidSubmit()
+    {
+        await _js.InvokeVoidAsync("DisplayAlert", "Deinen Antrag wurde entgegen genommen , wir werden uns umgehend zurückmelden");
+        antragModel = new();
+        StateHasChanged();
+    }
+}
